@@ -36,6 +36,8 @@ roles <- c("director", "producer", "special effects", "editor", "dp", "ad", "sou
 # create 1 empty production dataframe
 production <- data.frame(roles)
 production[,column_names] <- NA
+# turn factors into strings
+production <- data.frame(lapply(production, as.character), stringsAsFactors=FALSE)
 
 # copy/paste 3 dataframes
 production_A <- production
