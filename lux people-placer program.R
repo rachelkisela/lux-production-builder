@@ -12,12 +12,12 @@ pref_role_2 <-    c("pa",           "director",     "assistant camera")
 pref_role_3 <-    c("art dept",     "sound",        "pa")
 years_in_lux <-   c(2,              2,              3)
 years_at_uw <-    c(2,              3,              4)
-importance <-     c("role",         "production",   "production")
+importance <-     c("role",         "production",   "role")
 notes <-          c("",             "busy 3/5/19",  "here's a link to my channel \"youtube.com\"")
 
 # create data frame from fake info
 members <- data.frame(name, pref_prod_1, pref_prod_2, pref_prod_3, pref_role_1, pref_role_2, pref_role_3,
-                      years_in_lux, years_at_uw, importance, notes)
+                      years_in_lux, years_at_uw, importance, notes, stringsAsFactors = FALSE)
 
 # name columns
 column_names <- c("name", "pref_prod_1", "pref_prod_2", "pref_prod_3", "pref_role_1", "pref_role_2",
@@ -57,14 +57,26 @@ members <- members[order(-members$years_in_lux, -members$years_at_uw),]
   # first...find importance (should be production)
 #isTRUE(members[1,10] == "role") # returns FALSE ("production") - as test
 if (members[1,10] == "role") {
-  role_to_check <- as.character(members[1,5])
+  role_to_check <- as.character(members[1,5]) #"[1,5]" will change depending on # iteration, set to prod_A for testing
   # filtering production_A to specified role to be used in the boolean for the following if statement
   filtered <- filter(eval(as.name(as.character(members[1,2]))), roles == role_to_check)
-  # if the row is empty in the prod_df, place member's name in the appropriate row in the prod_df
+  # ** CHRIS -- I CHANGED OUR IDEA TO GET PRODUCTION DF'S BELOW:
+  # if the row is empty in the prod_df,
   if (is.na(filtered$name)) {
-    get(as.character(members[1,2]))[1,] <- members[1,1]
+    # THEN place member's name & info in the "filtered" df,
+    for (i in 1:11) {
+      filtered[1, i+1] <- members[1, i]
+    }
+    # THEN combine with prod_A df, matching row by role name,
+    combined <- left_join(eval(as.name(as.character(members[1,2]))), 
+                          filtered, by = "roles", suffix = c("_to_remove", ""))
+      # ...and FINALLY, remove NA columns remaining after left_join.
+    combined <- combined[,-2:-12]
+    
+    # rename new dataframe as the production's title. ***** WORK-IN-PROGRESS BY RACHEL 3/4
+    assign(get(as.character(members[1,2])), combined)
+    # finished...prod_A df is updated with new placement!
   }
-  get(as.character(members[1,2]))
 } else { # importance = production
   
 }
