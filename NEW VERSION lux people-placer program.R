@@ -94,7 +94,7 @@ if (members[1,10] == "role") { # importance = role
   # delete the top row off of the "members" df 
   members <- members[-1,]
   
-  # reset to 1st production choice, 1st role choice, and iteration count to 0
+  # reset to 1st production choice and 1st role choice
   production_choice <- 1
   role_choice <- 1
   
@@ -104,8 +104,15 @@ if (members[1,10] == "role") { # importance = role
     production_choice <- production_choice + 1
     
     if (production_choice == 3) {
+      
       production_choice <- 1
-      role_choice <- role_choice + 1
+      
+      if (role_choice == 3) {
+        role_choice <- 1
+      } else {
+        role_choice <- role_choice + 1
+      }
+      
     }
     
     # ***** I WAS WORKING HERE WHEN I LEFT OFF 3/12/19 2:10 PM
