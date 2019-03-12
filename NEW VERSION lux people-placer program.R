@@ -12,7 +12,7 @@ pref_role_2 <-    c("pa",           "director",     "assistant camera")
 pref_role_3 <-    c("art dept",     "sound",        "pa")
 years_in_lux <-   c(2,              2,              3)
 years_at_uw <-    c(2,              3,              4)
-importance <-     c("role",         "production",   "role")
+importance <-     c("production",   "role",         "role")
 notes <-          c("",             "busy 3/5/19",  "here's a link to my channel \"youtube.com\"")
 
 # create data frame from fake info
@@ -63,32 +63,28 @@ members <- members[order(-members$years_in_lux, -members$years_at_uw),]
 
 # ** ALGORITHM **
 
-loop_iteration <- 1
+# define 1st production choice, 1st role choice and # of iterations = 0
+production_choice <- 1
+role_choice <- 1
+
+# *** add once algorithm is complete: while ("members" df is not empty) { } *** 
 
 # for testing purposes - singling out Member 3 (row 1 of "members" df)
 
-# *** add at the end of algorithm: while ("members" df is not empty) { } *** 
 if (members[1,10] == "role") { # importance = role
   
-  # ** keep track of loops - not utilized yet
-  loop_iteration <- loop_iteration + 1
-  if (loop_iteration == 3) {
-    loop_iteration <- 1
-  }
-  # ** 
-  
   # store the role to check
-  role_to_check <- members[1, 5] # bracket # will change depending on # of loop iteration
+  role_to_check <- members[1, 5] # bracket #5 will change depending on role_choice
   # store the row # matching the role_to_check string for future use
   starting_row_number <- which(rownames(production) == role_to_check)
   
   # paste together the correct column name to check in the "production" DF
-  column_to_check <- paste0(members[1,2], "_name") # bracket # will change depending on # of loop iteration
+  column_to_check <- paste0(members[1, 2], "_name") # bracket #2 will change depending on production_choice
   # store the column # matching the column_to_check string for future use
   starting_column_number <- which(colnames(production) == column_to_check)
   
-  # if the row is empty in the prod_df,
-  if (is.na(production[role_to_check, column_to_check])) {
+  
+  if (is.na(production[role_to_check, column_to_check])) {   # if the row is empty in the prod_df,
     # THEN place member's name & info into the "production" df,
     for (i in 1:11) {
       production[starting_row_number, starting_column_number - 1 + i] <- members[1, i]
@@ -98,7 +94,30 @@ if (members[1,10] == "role") { # importance = role
   # delete the top row off of the "members" df 
   members <- members[-1,]
   
+  # reset to 1st production choice, 1st role choice, and iteration count to 0
+  production_choice <- 1
+  role_choice <- 1
+  
+  } else {    # if the row is NOT empty in the prod_df,
+    
+    # ** keep track of loops
+    production_choice <- production_choice + 1
+    
+    if (production_choice == 3) {
+      production_choice <- 1
+      role_choice <- role_choice + 1
+    }
+    
+    # ***** I WAS WORKING HERE WHEN I LEFT OFF 3/12/19 2:10 PM
+    
+    # ** 
+    
+    
+    
   }
 } else { # importance = production
+  print("production was preferred, algorithm not written yet, no new placement")
   
+  # delete the top row off of the "members" df 
+  members <- members[-1,]
 }
