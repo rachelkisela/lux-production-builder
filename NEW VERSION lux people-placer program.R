@@ -1,5 +1,8 @@
 # load libraries
 library(dplyr)
+library(devtools)
+# devtools::install_github("dokato/todor") ** CHRIS - I use this package to find TO-DOs quickly
+
 
 # ** CREATING MEMBERS DF **
 # creating fake info to put into the dataframe for testing
@@ -77,20 +80,21 @@ while (!is.na(members[1,1])) {
   member_just_placed <- FALSE
   
   repeat {
+   
+    # store the role to check
+    role_to_check <- members[1, role_choice + 4]
+    # store the row # matching the role_to_check string for future use
+    starting_row_number <- which(rownames(production) == role_to_check)
     
-    if (members[1,10] == "role") { # importance = role
-      
-      # store the role to check
-      role_to_check <- members[1, role_choice + 4]
-      # store the row # matching the role_to_check string for future use
-      starting_row_number <- which(rownames(production) == role_to_check)
-      
-      # paste together the correct column name to check in the "production" DF
-      column_to_check <- paste0(members[1, production_choice + 1], "_name") # bracket #2 will change depending on production_choice
-      # store the column # matching the column_to_check string for future use
-      starting_column_number <- which(colnames(production) == column_to_check)
-      
-      
+    # paste together the correct column name to check in the "production" DF
+    column_to_check <- paste0(members[1, production_choice + 1], "_name") # bracket #2 will change depending on production_choice
+    # store the column # matching the column_to_check string for future use
+    starting_column_number <- which(colnames(production) == column_to_check)
+    
+    
+# ********* IMPORTANCE = ROLE *********
+    if (members[1,10] == "role") {
+  
       if (is.na(production[role_to_check, column_to_check])) {   # if the cell is empty in the "production" df,
         # THEN place member's name & info into the "production" df.
         for (i in 1:11) {
@@ -107,12 +111,14 @@ while (!is.na(members[1,1])) {
         # increment production_choice and role_choice according to their preference (role more important)
         production_choice <- production_choice + 1
         
-        if (production_choice == 3) {
+        if (production_choice == 4) {
           
           production_choice <- 1
           
-          if (role_choice == 3) {
-            role_choice <- 1
+          if (role_choice == 3 && production_choice == 3) {
+            
+            # TODO: WHAT TO DO WHEN ALL CHOICES EXHAUSTED? PLACE AS PA ON 1ST CHOICE PRODUCTION - HOW? SEPARATE DF AND THEN COMBINE AT END?
+            
           } else {
             role_choice <- role_choice + 1
           }
@@ -121,12 +127,40 @@ while (!is.na(members[1,1])) {
       }
       
       
-    } else { # importance = production
-      print("production was preferred, algorithm not written yet, no new placement")
+# ********* IMPORTANCE = PRODUCTION *********
+    } else {
+    
+        if (is.na(production[role_to_check, column_to_check])) {   # if the cell is empty in the "production" df,
+          # THEN place member's name & info into the "production" df.
+          for (i in 1:11) {
+          production[starting_row_number, starting_column_number - 1 + i] <- members[1, i]
+         }
+        
+         # "production" df is now updated with the new placement!
+         # delete the top row off of the "members" df 
+         members <- members[-1,]
+         member_just_placed <- TRUE
+        
+        } else {    # however, if the row is NOT empty in the prod_df,
+          
+          # increment production_choice and role_choice according to their preference (production more important)
+          role_choice <- role_choice + 1
+          
+          if (production_choice == 4) {
+            
+            production_choice <- 1
+            
+            if (role_choice == 3 && production_choice == 3) {
+              
+              # TODO: WHAT TO DO WHEN ALL CHOICES EXHAUSTED? PLACE AS PA ON 1ST CHOICE PRODUCTION - HOW? SEPARATE DF AND THEN COMBINE AT END?
+              
+            } else {
+              role_choice <- role_choice + 1
+            }
+            
+          }
+        }
       
-      # delete the top row off of the "members" df 
-      members <- members[-1,]
-      member_just_placed <- TRUE
     }
 
     if (member_just_placed) {break} # keep running this "repeat" loop while on the same member,
