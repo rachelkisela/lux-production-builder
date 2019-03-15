@@ -51,10 +51,20 @@ prod_3_column_names <- sapply(column_names, function(x) paste0("production_C_", 
 # combine all column titles into one giant list of column titles
 all_column_names <- c(prod_1_column_names, prod_2_column_names, prod_3_column_names)
 
-# create 1 big dataframe, name the columns and make every cell "NA"
+# create 1 big "production" dataframe, name the columns and make every cell "NA"
 production[,all_column_names] <- NA
 
 
+# ** CREATING PA DF **
+# create a "pa" dataframe with 1 cell
+pa <- data.frame("pa")
+# add row name "pa"
+row.names(pa) <- "pa"
+# delete inital row
+pa$X.pa. <- NULL
+
+# create 1 "pa" dataframe, name the columns and make every cell "NA"
+pa[,all_column_names] <- NA
 
 
 
@@ -146,13 +156,21 @@ while (!is.na(members[1,1])) {
           # increment production_choice and role_choice according to their preference (production more important)
           role_choice <- role_choice + 1
           
-          if (production_choice == 4) {
+          if (role_choice == 4) {
             
-            production_choice <- 1
+            production_choice <- production_choice + 1
+            role_choice <- 1
             
-            if (role_choice == 3 && production_choice == 3) {
-              
-              # TODO: WHAT TO DO WHEN ALL CHOICES EXHAUSTED? PLACE AS PA ON 1ST CHOICE PRODUCTION - HOW? SEPARATE DF AND THEN COMBINE AT END?
+            if (role_choice == 1 && production_choice == 4) {
+              # TODO - make path for when all options exhausted, pa df - also copy this into "production" priority
+              for (i in 1:11) {
+                # copy name into PA df
+                pa[1, i] <- members[1, i]
+                # add blank row to bottom of pa df
+                pa[nrow(pa)+1,] <- NA
+                # reverse order 
+                pa <- pa[nrow(pa):1, ]
+              }
               
             } else {
               role_choice <- role_choice + 1
@@ -167,4 +185,5 @@ while (!is.na(members[1,1])) {
                                      # allows loop to remember the # of iteration
   }
 }
+# FINALLY - sort PA df by member order again
 
