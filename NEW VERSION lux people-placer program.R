@@ -1,10 +1,12 @@
 # load libraries
 library(dplyr)
 library(devtools)
-# devtools::install_github("dokato/todor") ** CHRIS - I use this package to find TO-DOs quickly
+# devtools::install_github("dokato/todor") - Finds "#TODO"s in the document.
+  # However it doesnt work because this is an RScript file and not an R Project?
+  # Not quite sure how that works.
 
 
-# ** CREATING MEMBERS DF **
+# ** FAKE INFO: CREATING MEMBERS DF **
 # creating fake info to put into the dataframe for testing
 # real-world, would take in a Google Forms spreadsheet
 name <-           c("Member 1",     "Member 2",     "Member 3")
@@ -29,6 +31,13 @@ column_names <- c("name", "pref_prod_1", "pref_prod_2", "pref_prod_3", "pref_rol
 colnames(members) <- column_names
 
 
+
+# ** ACTUAL GOOGLE FORMS DATA: CREATING MEMBERS DF -- VERY INCOMPLETE **
+members_real = read.csv("EXAMPLE_ LUX Role Survey AU19 (Responses) - Form Responses 1.csv")
+# I had to make a new line (pressed ENTER once) at the bottom of the actual CSV file in TextEdit 
+# to get R to read it correctly -- huh, weird.
+# The names of the columns are gonna present a big problem. Lots of code will need to be changed since specific
+# column names are referenced.
 
 
 
@@ -58,8 +67,6 @@ production[,all_column_names] <- NA
 # ** CREATING PA DF **
 # create a "pa" dataframe with 1 cell
 pa <- data.frame("pa")
-# add row name "pa"
-row.names(pa) <- "pa"
 # delete inital row
 pa$X.pa. <- NULL
 
@@ -68,11 +75,14 @@ pa[,all_column_names] <- NA
 
 
 
+
+
+
+
 # ** SORTING PEOPLE **
 
-# sort members df by experience
+# sort members df by experience, so more experienced people get placed first
 members <- members[order(-members$years_in_lux, -members$years_at_uw),]
-
 
 
 # ** ALGORITHM **
@@ -82,6 +92,7 @@ production_choice <- 1
 role_choice <- 1
 member_just_placed <- FALSE
 
+# run this loop while there are still members to sort
 while (!is.na(members[1,1])) {
   
   # reset to 1st production choice, 1st role choice, and if a member was just placed
@@ -124,13 +135,20 @@ while (!is.na(members[1,1])) {
         if (production_choice == 4) {
           
           production_choice <- 1
+          role_choice <- role_choice + 1
           
-          if (role_choice == 3 && production_choice == 3) {
+          # if all choices are exhausted, add this member to the PA df
+          if (role_choice == 4 && production_choice == 1) {
             
-            # TODO: WHAT TO DO WHEN ALL CHOICES EXHAUSTED? PLACE AS PA ON 1ST CHOICE PRODUCTION - HOW? SEPARATE DF AND THEN COMBINE AT END?
+            for (i in 1:11) {
+              # copy name into PA df
+              pa[1, i] <- members[1, i]
+              
+              # add blank row to top of pa df
+              x <- rep(NA, ncol(pa))
+              pa <- rbind(x, pa)
+            }
             
-          } else {
-            role_choice <- role_choice + 1
           }
           
         }
@@ -161,19 +179,17 @@ while (!is.na(members[1,1])) {
             production_choice <- production_choice + 1
             role_choice <- 1
             
+            # if all choices are exhausted, add this member to the PA df
             if (role_choice == 1 && production_choice == 4) {
-              # TODO - make path for when all options exhausted, pa df - also copy this into "production" priority
               for (i in 1:11) {
                 # copy name into PA df
                 pa[1, i] <- members[1, i]
-                # add blank row to bottom of pa df
-                pa[nrow(pa)+1,] <- NA
-                # reverse order 
-                pa <- pa[nrow(pa):1, ]
+                
+                # add blank row to top of pa df
+                x <- rep(NA, ncol(pa))
+                pa <- rbind(x, pa)
               }
               
-            } else {
-              role_choice <- role_choice + 1
             }
             
           }
