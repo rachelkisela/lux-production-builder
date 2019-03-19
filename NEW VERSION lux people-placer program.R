@@ -36,6 +36,8 @@ colnames(members) <- column_names
 members_real = read.csv("EXAMPLE_ LUX Role Survey AU19 (Responses) - Form Responses 1-2.csv")
 # delete timestamped row
 members_real <- members_real[,-1]
+# rename column names so the program can reference them
+colnames(members_real) <- column_names
 
 # I had to make a new line (pressed ENTER once) at the bottom of the actual CSV file in TextEdit 
 # to get R to read it correctly -- huh, weird.
