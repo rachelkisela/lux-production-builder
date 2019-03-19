@@ -13,8 +13,8 @@ name <-           c("Member 1",     "Member 2",     "Member 3")
 pref_prod_1 <-    c("production_A", "production_C", "production_C")
 pref_prod_2 <-    c("production_B", "production_B", "production_A")
 pref_prod_3 <-    c("production_C", "production_A", "production_B")
-pref_role_1 <-    c("director",     "camera",       "camera")
-pref_role_2 <-    c("pa",           "director",     "assistant camera")
+pref_role_1 <-    c("pa",           "camera",       "camera")
+pref_role_2 <-    c("director",     "director",     "assistant camera")
 pref_role_3 <-    c("art dept",     "sound",        "pa")
 years_in_lux <-   c(2,              2,              3)
 years_at_uw <-    c(2,              3,              4)
@@ -33,11 +33,12 @@ colnames(members) <- column_names
 
 
 # ** ACTUAL GOOGLE FORMS DATA: CREATING MEMBERS DF -- VERY INCOMPLETE **
-members_real = read.csv("EXAMPLE_ LUX Role Survey AU19 (Responses) - Form Responses 1.csv")
+members_real = read.csv("EXAMPLE_ LUX Role Survey AU19 (Responses) - Form Responses 1-2.csv")
+# delete timestamped row
+members_real <- members_real[,-1]
+
 # I had to make a new line (pressed ENTER once) at the bottom of the actual CSV file in TextEdit 
 # to get R to read it correctly -- huh, weird.
-# The names of the columns are gonna present a big problem. Lots of code will need to be changed since specific
-# column names are referenced.
 
 
 
@@ -71,7 +72,7 @@ pa <- data.frame("pa")
 pa$X.pa. <- NULL
 
 # create 1 "pa" dataframe, name the columns and make every cell "NA"
-pa[,all_column_names] <- NA
+pa[,column_names] <- NA
 
 
 
@@ -115,7 +116,26 @@ while (!is.na(members[1,1])) {
     
 # ********* IMPORTANCE = ROLE *********
     if (members[1,10] == "role") {
-  
+      
+      # if the current "role to check" is a pa, copy & paste the member onto the PA df,
+      # remove the top row of the members df, and begin placing the next member.
+      if (role_to_check == "pa") {
+        
+        for (i in 1:11) {
+          # copy name into PA df
+          pa[1, i] <- members[1, i]
+        }
+          
+         # add blank row to top of pa df
+        x <- rep(NA, ncol(pa))
+        pa <- rbind(x, pa)
+        
+        # delete the top row off of the "members" df 
+        members <- members[-1,]
+        member_just_placed <- TRUE
+        break
+      }
+      
       if (is.na(production[role_to_check, column_to_check])) {   # if the cell is empty in the "production" df,
         # THEN place member's name & info into the "production" df.
         for (i in 1:11) {
@@ -157,6 +177,25 @@ while (!is.na(members[1,1])) {
       
 # ********* IMPORTANCE = PRODUCTION *********
     } else {
+      
+      # if the current "role to check" is a pa, copy & paste the member onto the PA df,
+      # remove the top row of the members df, and begin placing the next member.
+      if (role_to_check == "pa") {
+        
+        for (i in 1:11) {
+          # copy name into PA df
+          pa[1, i] <- members[1, i]
+        }
+        
+        # add blank row to top of pa df
+        x <- rep(NA, ncol(pa))
+        pa <- rbind(x, pa)
+        
+        # delete the top row off of the "members" df 
+        members <- members[-1,]
+        member_just_placed <- TRUE
+        break
+      }
     
         if (is.na(production[role_to_check, column_to_check])) {   # if the cell is empty in the "production" df,
           # THEN place member's name & info into the "production" df.
