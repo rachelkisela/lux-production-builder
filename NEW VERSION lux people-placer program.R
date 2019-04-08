@@ -242,6 +242,23 @@ while (!is.na(members[1,1])) {
                                      # allows loop to remember the # of iteration
   }
 }
-# FINALLY - sort PA df by member order again
+# THEN, split the 1 big production df into 3 separate productions dfs
+production_A_df <- production[1:11]
+production_B_df <- production[12:22]
+production_C_df <- production[23:33]
 
-# I don't know. Hopefully it doesn't break
+# group PAs by #1 preferred production
+# grouping prevents having to use string as a variable name, as in:
+  # df_to_add_pa <- paste0(pa[2,2], "_df")
+
+pa <- pa[order(pref_prod1),] 
+
+# then place into appropriate separate production DF
+
+
+
+
+
+
+
+
