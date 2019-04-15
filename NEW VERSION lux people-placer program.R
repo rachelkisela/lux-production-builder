@@ -9,17 +9,17 @@ library(devtools)
 # ** FAKE INFO: CREATING MEMBERS DF **
 # creating fake info to put into the dataframe for testing
 # real-world, would take in a Google Forms spreadsheet
-name <-           c("Member 1",     "Member 2",     "Member 3")
-pref_prod_1 <-    c("production_A", "production_C", "production_C")
-pref_prod_2 <-    c("production_B", "production_B", "production_A")
-pref_prod_3 <-    c("production_C", "production_A", "production_B")
-pref_role_1 <-    c("pa",           "camera",       "camera")
-pref_role_2 <-    c("director",     "director",     "assistant camera")
-pref_role_3 <-    c("art dept",     "sound",        "pa")
-years_in_lux <-   c(2,              2,              3)
-years_at_uw <-    c(2,              3,              4)
-importance <-     c("production",   "role",         "role")
-notes <-          c("",             "busy 3/5/19",  "here's a link to my channel \"youtube.com\"")
+name <-           c("Member 1",     "Member 2",     "Member 3",         "pa1", "pa2", "pa3") # added these 3 pa members to test pa df at end of program
+pref_prod_1 <-    c("production_A", "production_C", "production_C",     "production_A", "production_B", "production_C")
+pref_prod_2 <-    c("production_B", "production_B", "production_A",     "production_A", "production_B", "production_C")
+pref_prod_3 <-    c("production_C", "production_A", "production_B",     "production_A", "production_B", "production_C")
+pref_role_1 <-    c("pa",           "camera",       "camera",           "pa", "pa", "pa")
+pref_role_2 <-    c("director",     "director",     "assistant camera", "pa", "pa", "pa")
+pref_role_3 <-    c("art dept",     "sound",        "pa",               "pa", "pa", "pa")
+years_in_lux <-   c(2,              2,              3,                  5, 5, 5)
+years_at_uw <-    c(2,              3,              4,                  5, 5, 5)
+importance <-     c("production",   "role",         "role",             "role", "role", "role")
+notes <-          c("",             "busy 3/5/19",  "here's a link to my channel \"youtube.com\"", "", "", "")
 
 # create data frame from fake info
 members <- data.frame(name, pref_prod_1, pref_prod_2, pref_prod_3, pref_role_1, pref_role_2, pref_role_3,
@@ -247,13 +247,25 @@ production_A_df <- production[1:11]
 production_B_df <- production[12:22]
 production_C_df <- production[23:33]
 
+
+# ** PLACING PAs ON PRODUCTION DFs **
 # group PAs by #1 preferred production
-# grouping prevents having to use string as a variable name, as in:
-  # df_to_add_pa <- paste0(pa[2,2], "_df")
+# (grouping prevents having to use string as a variable name)
+pa <- pa[order(pref_prod_1),] # TODO RK 4/14: why does this order it prod_B THEN prod_A? shouldnt it be alphabetical?
 
-pa <- pa[order(pref_prod1),] 
+# this creates 2 blank rows on top and bottom. Delete these rows
+pa <- pa[-1,] # deletes top row
+pa_df_length <- nrow(pa) # finds total # rows, uses that variable to...
+pa <- pa[-pa_df_length,] #...delete bottom row.
 
-# then place into appropriate separate production DF
+# TODO RK 4/14:
+# for the length of the pa df, check if "pref_prod_1" matches the next row.
+# if it does, split the data frame into each production's pa df.
+for (i in 1:pa_df_length - 1) {
+  
+}
+
+# finally, place into appropriate separate production DF
 
 
 
