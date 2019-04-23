@@ -243,27 +243,39 @@ while (!is.na(members[1,1])) {
   }
 }
 # THEN, split the 1 big production df into 3 separate productions dfs
-production_A_df <- production[1:11]
-production_B_df <- production[12:22]
-production_C_df <- production[23:33]
+production_A <- production[1:11]
+production_B <- production[12:22]
+production_C <- production[23:33]
+
+# create a list of all production dataframes for variable-free referencing
+prod_df_list <- list(production_A, production_B, production_C)
+
 
 
 # ** PLACING PAs ON PRODUCTION DFs **
-# group PAs by #1 preferred production
-# (grouping prevents having to use string as a variable name)
-pa <- pa[order(pref_prod_1),] # TODO RK 4/14: why does this order it prod_B THEN prod_A? shouldnt it be alphabetical?
+# delete the top blank row
+pa <- pa[-1,]
 
-# this creates 2 blank rows on top and bottom. Delete these rows
-pa <- pa[-1,] # deletes top row
-pa_df_length <- nrow(pa) # finds total # rows, uses that variable to...
-pa <- pa[-pa_df_length,] #...delete bottom row.
+# sort PAs by #1 preferred production
+pa <- pa[order(pa$pref_prod_1),]
 
-# TODO RK 4/14:
+
+# TODO RK 4/22:
 # for the length of the pa df, check if "pref_prod_1" matches the next row.
 # if it does, split the data frame into each production's pa df.
-for (i in 1:pa_df_length - 1) {
-  
-}
+#for (i in 1:(nrow(pa) - 1)) {
+#  if (pa[i, 2] != pa[i+1, 2]) {
+#    prod_df_list #TODO maybe use this to reference dfs instead of names?
+#    
+#    prod_df_name <- get(pa[i,2]) # name current prod_df we are working with
+#    names(pa) <- names(prod_df_name) # change pa_df colnames to prod_df colnames to match for "rbind"
+#    prod_df_name <- rbind(pa[1:i,], prod_df_name)
+#    #TODO rename production df WITH pa's to "production_A" instead of "prod_df_name"
+#    # struggling here to do so
+#    }
+#}
+
+
 
 # finally, place into appropriate separate production DF
 
