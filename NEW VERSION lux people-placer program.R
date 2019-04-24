@@ -1,9 +1,6 @@
 # load libraries
 library(dplyr)
 library(devtools)
-# devtools::install_github("dokato/todor") - Finds "#TODO"s in the document.
-  # However it doesnt work because this is an RScript file and not an R Project?
-  # Not quite sure how that works.
 
 
 # ** FAKE INFO: CREATING MEMBERS DF **
@@ -255,38 +252,31 @@ prod_df_list <- list(production_A, production_B, production_C)
 # ** PLACING PAs ON PRODUCTION DFs **
 # delete the top blank row
 pa <- pa[-1,]
-
 # sort PAs by #1 preferred production
 pa <- pa[order(pa$pref_prod_1),]
 
+# store indeces of unique values in pref_prod_1 column to find out where to split pa df
+unique_indexes <- tapply(seq_along(pa$pref_prod_1), pa$pref_prod_1, identity)[unique(pa$pref_prod_1)]
+unique_indexes <- lapply(unique_indexes, `[[`, 1) # only save first element from each list value
+unique_indexes <- unlist(unique_indexes, use.names=FALSE) # turn list into a vector
 
-# TODO RK 4/22:
-# for the length of the pa df, check if "pref_prod_1" matches the next row.
-# if it does, split the data frame into each production's pa df.
-for (i in 1:(nrow(pa) - 1)) {
-  if (pa[i, 2] != pa[i+1, 2]) {
-#    prod_df_list #TODO maybe use this to reference dfs instead of names? 4/23 maybe not
-    
-    # store indeces of unique values in pref_prod_1 column to find out how to split pa df
-    unique_indexes <- tapply(seq_along(pa$pref_prod_1), pa$pref_prod_1, identity)[unique(pa$pref_prod_1)]
-    unique_indexes <- lapply(unique_indexes, `[[`, 1) # only save first element from each list value
-    unique_indexes <- unlist(unique_indexes, use.names=FALSE) # turn list into a vector
-    
-    
-    
-    
-#    prod_df_name <- get(pa[1,2]) # name current prod_df we are working with #should be [i,2]
-#    names(pa) <- names(prod_df_name) # change pa_df colnames to prod_df colnames to match for "rbind"
-#    prod_df_name <- rbind(pa[1:i,], prod_df_name)
-    #TODO rename production df WITH pa's to "production_A" instead of "prod_df_name"
-    # struggling here to do so
-    }
+# split pa and add on to production dfs based on unique_indexes
+for (i in 1:length(unique_indexes)) {
+  
+  if (i == length(unique_indexes)) {
+    split <- pa[unique_indexes[i]:nrow(pa),]
+  } else {
+    split <- pa[unique_indexes[i]:(unique_indexes[i + 1] - 1),]
+  }
+  
+  names(split) <- names(prod_df_list[[i]]) # change pa_df colnames to prod_df colnames to match for rbind fxn
+  prod_df_list[[i]] <- rbind(split, prod_df_list[[i]])
 }
-
-
-
-# finally, place into appropriate separate production DF
-
+  
+# how to view final production dfs for testing
+View(prod_df_list[[1]])
+View(prod_df_list[[2]])
+View(prod_df_list[[3]])
 
 
 
