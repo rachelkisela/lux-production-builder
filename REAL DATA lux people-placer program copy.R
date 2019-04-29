@@ -2,46 +2,33 @@
 library(dplyr)
 library(devtools)
 
+# ***** GLOBAL VARIABLES - entered by user in app *****
+# number of productions <- "x"
+production_A_title <- "Ace Ventura"
+production_B_title <- "Blazing Saddles"
+production_C_title <- "Contact"
 
-# ** FAKE INFO: CREATING MEMBERS DF **
-# creating fake info to put into the dataframe for testing
-# real-world, would take in a Google Forms spreadsheet
-name <-           c("Member 1",     "Member 2",     "Member 3",         "pa1", "pa2", "pa3") # added these 3 pa members to test pa df at end of program
-pref_prod_1 <-    c("production_A", "production_C", "production_C",     "production_A", "production_B", "production_C")
-pref_prod_2 <-    c("production_B", "production_B", "production_A",     "production_A", "production_B", "production_C")
-pref_prod_3 <-    c("production_C", "production_A", "production_B",     "production_A", "production_B", "production_C")
-pref_role_1 <-    c("pa",           "camera",       "camera",           "pa", "pa", "pa")
-pref_role_2 <-    c("director",     "director",     "assistant camera", "pa", "pa", "pa")
-pref_role_3 <-    c("art dept",     "sound",        "pa",               "pa", "pa", "pa")
-years_in_lux <-   c(2,              2,              3,                  5, 5, 5)
-years_at_uw <-    c(2,              3,              4,                  5, 5, 5)
-importance <-     c("production",   "role",         "role",             "role", "role", "role")
-notes <-          c("",             "busy 3/5/19",  "here's a link to my channel \"youtube.com\"", "", "", "")
+production_titles <- c(production_A_title, production_B_title, production_C_title)
 
-# create data frame from fake info
-members <- data.frame(name, pref_prod_1, pref_prod_2, pref_prod_3, pref_role_1, pref_role_2, pref_role_3,
-                      years_in_lux, years_at_uw, importance, notes, stringsAsFactors = FALSE)
 
-# name columns
-column_names <- c("name", "pref_prod_1", "pref_prod_2", "pref_prod_3", "pref_role_1", "pref_role_2",
-                  "pref_role_3", "years_in_lux", "years_at_uw", "importance", "notes")
-colnames(members) <- column_names
+# replace spaces with underscores
+production_A_title_u <- gsub(" ", "_", production_A_title)
+production_B_title_u <- gsub(" ", "_", production_B_title)
+production_C_title_u <- gsub(" ", "_", production_C_title)
 
+production_titles_u <- c(production_A_title_u, production_B_title_u, production_C_title_u)
 
 
 # ** ACTUAL GOOGLE FORMS DATA: CREATING MEMBERS DF -- VERY INCOMPLETE **
-members_real = read.csv("TEST_ LUX Role Survey AU19 (Responses) - Form Responses 1.csv")
+members = read.csv("TEST_ LUX Role Survey AU19 (Responses) - Form Responses 1.csv", stringsAsFactors=FALSE)
 # delete timestamped row
-members_real <- members_real[,-1]
+members <- members[,-1]
 # define column names
-real_column_names <- c("email", "name", "pref_prod_1", "pref_prod_2", "pref_prod_3", "pref_role_1", "pref_role_2",
-                  "pref_role_3", "years_in_lux", "years_at_uw", "importance", "notes")
+column_names <- c("email", "name", "years_in_lux", "years_at_uw", "writer/director?",
+                       "writer/director film", "pref_prod_1", "pref_prod_2", "pref_prod_3",
+                       "pref_role_1", "pref_role_2", "pref_role_3", "importance", "notes")
 # rename column names so the program can reference them
-colnames(members_real) <- real_column_names
-
-
-# I had to make a new line (pressed ENTER once) at the bottom of the actual CSV file in TextEdit 
-# to get R to read it correctly -- huh, weird.
+colnames(members) <- column_names
 
 
 
@@ -58,9 +45,9 @@ row.names(production) <- roles
 production$roles <- NULL
 
 # create column titles corresponding to each production
-prod_1_column_names <- sapply(column_names, function(x) paste0("production_A_", x))
-prod_2_column_names <- sapply(column_names, function(x) paste0("production_B_", x))
-prod_3_column_names <- sapply(column_names, function(x) paste0("production_C_", x))
+prod_1_column_names <- sapply(column_names, function(x) paste0(production_titles_u[1], "_", x))
+prod_2_column_names <- sapply(column_names, function(x) paste0(production_titles_u[2], "_", x))
+prod_3_column_names <- sapply(column_names, function(x) paste0(production_titles_u[3], "_", x))
 # combine all column titles into one giant list of column titles
 all_column_names <- c(prod_1_column_names, prod_2_column_names, prod_3_column_names)
 
@@ -76,9 +63,6 @@ pa$X.pa. <- NULL
 
 # create 1 "pa" dataframe, name the columns and make every cell "NA"
 pa[,column_names] <- NA
-
-
-
 
 
 
@@ -105,16 +89,41 @@ while (!is.na(members[1,1])) {
   member_just_placed <- FALSE
   
   repeat {
-   
+    
+# ********* WRITERS/DIRECTORS *********
+    if (members[1, "writer/director?"] == "Yes") {
+      # paste together the correct column name to check in the "production" DF
+      column_to_check <- paste0(members[1, 6], "_email")
+      column_to_check <- gsub(" ", "_", column_to_check)
+      # store the column # matching the column_to_check string for future use
+      starting_column_number <- which(colnames(production) == column_to_check)
+      
+      # place member on production df
+      for (i in 1:14) {
+        production["director", starting_column_number - 1 + i] <- members[1, i]
+        # "production" df is now updated with the new placement!
+        # delete the top row off of the "members" df 
+      }
+      members <- members[-1,]
+      member_just_placed <- TRUE
+      break
+    }
+# **************************************
+    
+    
+
+    #TODO here is where rachel left off 4/29 11:30am
+# ********* SETTING UP VARIABLES *********
     # store the role to check
-    role_to_check <- members[1, role_choice + 4]
+    role_to_check <- members[1, paste0("pref_role_", role_choice)]
     # store the row # matching the role_to_check string for future use
     starting_row_number <- which(rownames(production) == role_to_check)
     
     # paste together the correct column name to check in the "production" DF
-    column_to_check <- paste0(members[1, production_choice + 1], "_name") # bracket #2 will change depending on production_choice
+    column_to_check <- paste0(members[1, production_choice + 1], "_email")
     # store the column # matching the column_to_check string for future use
     starting_column_number <- which(colnames(production) == column_to_check)
+# **************************************  
     
     
 # ********* IMPORTANCE = ROLE *********
@@ -124,7 +133,7 @@ while (!is.na(members[1,1])) {
       # remove the top row of the members df, and begin placing the next member.
       if (role_to_check == "pa") {
         
-        for (i in 1:11) {
+        for (i in 1:14) {
           # copy name into PA df
           pa[1, i] <- members[1, i]
         }
@@ -141,7 +150,7 @@ while (!is.na(members[1,1])) {
       
       if (is.na(production[role_to_check, column_to_check])) {   # if the cell is empty in the "production" df,
         # THEN place member's name & info into the "production" df.
-        for (i in 1:11) {
+        for (i in 1:14) {
           production[starting_row_number, starting_column_number - 1 + i] <- members[1, i]
         }
         
@@ -163,7 +172,7 @@ while (!is.na(members[1,1])) {
           # if all choices are exhausted, add this member to the PA df
           if (role_choice == 4 && production_choice == 1) {
             
-            for (i in 1:11) {
+            for (i in 1:14) {
               # copy name into PA df
               pa[1, i] <- members[1, i]
               
@@ -185,7 +194,7 @@ while (!is.na(members[1,1])) {
       # remove the top row of the members df, and begin placing the next member.
       if (role_to_check == "pa") {
         
-        for (i in 1:11) {
+        for (i in 1:14) {
           # copy name into PA df
           pa[1, i] <- members[1, i]
         }
@@ -202,7 +211,7 @@ while (!is.na(members[1,1])) {
     
         if (is.na(production[role_to_check, column_to_check])) {   # if the cell is empty in the "production" df,
           # THEN place member's name & info into the "production" df.
-          for (i in 1:11) {
+          for (i in 1:14) {
           production[starting_row_number, starting_column_number - 1 + i] <- members[1, i]
          }
         
@@ -223,7 +232,7 @@ while (!is.na(members[1,1])) {
             
             # if all choices are exhausted, add this member to the PA df
             if (role_choice == 1 && production_choice == 4) {
-              for (i in 1:11) {
+              for (i in 1:14) {
                 # copy name into PA df
                 pa[1, i] <- members[1, i]
                 
@@ -244,9 +253,9 @@ while (!is.na(members[1,1])) {
   }
 }
 # THEN, split the 1 big production df into 3 separate productions dfs
-production_A <- production[1:11]
-production_B <- production[12:22]
-production_C <- production[23:33]
+production_A <- production[1:14]
+production_B <- production[15:28]
+production_C <- production[29:42]
 
 # create a list of all production dataframes for variable-free referencing
 prod_df_list <- list(production_A, production_B, production_C)
@@ -275,6 +284,7 @@ for (i in 1:length(unique_indexes)) {
   
   names(split) <- names(prod_df_list[[i]]) # change pa_df colnames to prod_df colnames to match for rbind fxn
   prod_df_list[[i]] <- rbind(split, prod_df_list[[i]])
+}
 }
   
 # how to view final production dfs for testing
