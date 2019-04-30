@@ -6,8 +6,10 @@ setwd("~/Desktop/lux-people-placer")
 # load libraries
 library(dplyr)
 library(devtools)
+library(writexl)
+library(data.table)
 
-# ***** GLOBAL VARIABLES - entered by user in app *****
+# ***** GLOBAL VARIABLES - entered by user in app - ENTER THEM ALPHABETICALLY *****
 # number of productions <- "x"
 production_A_title <- "Ace Ventura"
 production_B_title <- "Blazing Saddles"
@@ -118,7 +120,7 @@ while (!is.na(members[1,1])) {
     
     
 
-    #TODO here is where rachel left off 4/29 11:30am
+
 # ********* SETTING UP VARIABLES *********
     # store the role to check
     role_to_check <- members[1, paste0("pref_role_", role_choice)]
@@ -270,7 +272,7 @@ prod_df_list <- list(production_A, production_B, production_C)
 
 
 
-# ** PLACING PAs ON PRODUCTION DFs **
+# ********* PLACING PA's ON PRODUCTION DATAFRAMES *********
 # delete the top blank row
 pa <- pa[-1,]
 # sort PAs by #1 preferred production
@@ -281,7 +283,7 @@ unique_indexes <- tapply(seq_along(pa$pref_prod_1), pa$pref_prod_1, identity)[un
 unique_indexes <- lapply(unique_indexes, `[[`, 1) # only save first element from each list value
 unique_indexes <- unlist(unique_indexes, use.names = FALSE) # turn list into a vector
 
-# split pa and add on to production dfs based on unique_indexes
+
 for (i in 1:length(unique_indexes)) {
   
   if (i == length(unique_indexes)) {
@@ -291,12 +293,24 @@ for (i in 1:length(unique_indexes)) {
   }
   
   names(split) <- names(prod_df_list[[i]]) # change pa_df colnames to prod_df colnames to match for rbind fxn
-  prod_df_list[[i]] <- rbind(split, prod_df_list[[i]])
+  # moving row(s) matching production to that production's dataframe
+  prod_df_list[[i]] <- rbind(prod_df_list[[i]], "Production Assistant" = split)
 }
-  
+ 
+
+# ********* EXPORTING RESULTS *********
+
+# # write row names to its own column, then write final results to Excel spreadsheets and save in working directory 
+for (i in 1:3) {
+  setDT(prod_df_list[[i]], keep.rownames = TRUE)[]
+  write_xlsx(prod_df_list[[i]], paste0(production_titles_u[i], ".xlsx"))
+}
 
 
-# *** How to view final production dfs for testing:
+
+
+# NOTE:
+# *** How to view final production dfs within RStudio for testing:
 # View(prod_df_list[[1]])
 # View(prod_df_list[[2]])
 # View(prod_df_list[[3]])
