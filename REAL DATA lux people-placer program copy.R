@@ -1,3 +1,8 @@
+
+
+setwd("~/Desktop/lux-people-placer")
+# ^^ RACHEL ONLY ^^ 
+
 # load libraries
 library(dplyr)
 library(devtools)
@@ -34,8 +39,9 @@ colnames(members) <- column_names
 
 # ** CREATING PRODUCTION DF **
 # list of roles, ordered by experience required
-roles <- c("director", "producer", "special effects", "editor", "dp", "ad", "soundtrack", "camera", 
-           "assistant camera", "sound", "makeup", "art dept", "costumes", "scripty", "pa")
+roles <- c("Director", "Producer", "Special Effects", "Editor", "Director of Photography", "Assistant Director",
+           "Soundtrack", "Camera Operator", "Assistant Camera Operator", "Sound", "Makeup", "Art Department", "Costume",
+           "Script Supervisor")
 
 # create 1 empty production dataframe
 production <- data.frame(roles)
@@ -100,7 +106,7 @@ while (!is.na(members[1,1])) {
       
       # place member on production df
       for (i in 1:14) {
-        production["director", starting_column_number - 1 + i] <- members[1, i]
+        production["Director", starting_column_number - 1 + i] <- members[1, i]
         # "production" df is now updated with the new placement!
         # delete the top row off of the "members" df 
       }
@@ -118,20 +124,21 @@ while (!is.na(members[1,1])) {
     role_to_check <- members[1, paste0("pref_role_", role_choice)]
     # store the row # matching the role_to_check string for future use
     starting_row_number <- which(rownames(production) == role_to_check)
-    
     # paste together the correct column name to check in the "production" DF
-    column_to_check <- paste0(members[1, production_choice + 1], "_email")
+    
+    column_to_check <- paste0(members[1, production_choice + 6], "_email")
+    column_to_check <- gsub(" ", "_", column_to_check)
     # store the column # matching the column_to_check string for future use
     starting_column_number <- which(colnames(production) == column_to_check)
 # **************************************  
     
     
 # ********* IMPORTANCE = ROLE *********
-    if (members[1,10] == "role") {
-      
+    if (members[1, "importance"] == "Role") {
+
       # if the current "role to check" is a pa, copy & paste the member onto the PA df,
       # remove the top row of the members df, and begin placing the next member.
-      if (role_to_check == "pa") {
+      if (role_to_check == "Production Assistant") {
         
         for (i in 1:14) {
           # copy name into PA df
@@ -149,6 +156,7 @@ while (!is.na(members[1,1])) {
       }
       
       if (is.na(production[role_to_check, column_to_check])) {   # if the cell is empty in the "production" df,
+        
         # THEN place member's name & info into the "production" df.
         for (i in 1:14) {
           production[starting_row_number, starting_column_number - 1 + i] <- members[1, i]
@@ -192,7 +200,7 @@ while (!is.na(members[1,1])) {
       
       # if the current "role to check" is a pa, copy & paste the member onto the PA df,
       # remove the top row of the members df, and begin placing the next member.
-      if (role_to_check == "pa") {
+      if (role_to_check == "Production Assistant") {
         
         for (i in 1:14) {
           # copy name into PA df
@@ -271,7 +279,7 @@ pa <- pa[order(pa$pref_prod_1),]
 # store indeces of unique values in pref_prod_1 column to find out where to split pa df
 unique_indexes <- tapply(seq_along(pa$pref_prod_1), pa$pref_prod_1, identity)[unique(pa$pref_prod_1)]
 unique_indexes <- lapply(unique_indexes, `[[`, 1) # only save first element from each list value
-unique_indexes <- unlist(unique_indexes, use.names=FALSE) # turn list into a vector
+unique_indexes <- unlist(unique_indexes, use.names = FALSE) # turn list into a vector
 
 # split pa and add on to production dfs based on unique_indexes
 for (i in 1:length(unique_indexes)) {
@@ -285,12 +293,13 @@ for (i in 1:length(unique_indexes)) {
   names(split) <- names(prod_df_list[[i]]) # change pa_df colnames to prod_df colnames to match for rbind fxn
   prod_df_list[[i]] <- rbind(split, prod_df_list[[i]])
 }
-}
   
-# how to view final production dfs for testing
-View(prod_df_list[[1]])
-View(prod_df_list[[2]])
-View(prod_df_list[[3]])
+
+
+# *** How to view final production dfs for testing:
+# View(prod_df_list[[1]])
+# View(prod_df_list[[2]])
+# View(prod_df_list[[3]])
 
 
 
