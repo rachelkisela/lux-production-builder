@@ -1,5 +1,6 @@
 library(shiny)
 
+
 ui <- fluidPage(
   
   # App title ----
@@ -24,16 +25,45 @@ ui <- fluidPage(
     helpText("Please alphabetically enter the 3 production titles below:"),      
     textInput("prod1title", label = h6("First production title:")),
     textInput("prod2title", label = h6("Second production title")),
-    textInput("prod3title", label = h6("Third production title"))
+    textInput("prod3title", label = h6("Third production title")),
+    
+    downloadButton("downloadData", "Download 3 Production Spreadsheets")
     )
-  
-  #button "submit"
-  
 )
 
-# Define server logic to plot various variables against mpg ----
+
+
 server <- function(input, output) {
   
+  #TODO - does the algorithm go here?
+  
+  
+  
+  
+  output$downloadData <- downloadHandler(
+    #TODO - save 3 Excel files in a ZIP folder
+    filename = function(){
+      "productions.zip"
+      
+    },
+    content = function(file){
+      #go to a temp dir to avoid permission issues
+      owd <- setwd(tempdir())
+      on.exit(setwd(owd))
+      files <- NULL;
+      
+      #loop through the sheets
+      for (i in 1:3) {
+        # write each sheet to an excel file
+        write_xlsx(prod_df_list[[i]], paste0(production_titles_u[i], ".xlsx"))
+        files <- c(fileName,files)
+      }
+      # create the zip file
+      zip(file,files)
+    }
+  )
+  
+
 }
 
 shinyApp(ui, server)

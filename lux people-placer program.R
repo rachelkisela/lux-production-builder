@@ -18,12 +18,14 @@ production_C_title <- "Contact"
 production_titles <- c(production_A_title, production_B_title, production_C_title)
 
 
+
 # replace spaces with underscores
 production_A_title_u <- gsub(" ", "_", production_A_title)
 production_B_title_u <- gsub(" ", "_", production_B_title)
 production_C_title_u <- gsub(" ", "_", production_C_title)
 
 production_titles_u <- c(production_A_title_u, production_B_title_u, production_C_title_u)
+
 
 
 # ** ACTUAL GOOGLE FORMS DATA: CREATING MEMBERS DF -- VERY INCOMPLETE **
