@@ -1,4 +1,5 @@
 library(shiny)
+source("../lux people-placer program.R")
 
 
 ui <- fluidPage(
@@ -35,15 +36,11 @@ ui <- fluidPage(
 
 server <- function(input, output) {
   
-  #TODO - does the algorithm go here?
-  
-  
-  
-  
   output$downloadData <- downloadHandler(
-    #TODO - save 3 Excel files in a ZIP folder
+    # save 3 Excel files in a ZIP folder
+    files <- people_placer(input$prod1title, input$prod2title, input$prod3title),
     filename = "productions.zip",
-    content = zip(file, prod_df_list)
+    content = zip(files)
   )
   
 
