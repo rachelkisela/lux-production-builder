@@ -1,6 +1,6 @@
 
 
-setwd("~/Desktop/lux-people-placer")
+#setwd("~/Desktop/lux-people-placer")
 # ^^ RACHEL ONLY ^^ 
 
 # load libraries
@@ -9,7 +9,7 @@ library(devtools)
 library(writexl)
 library(data.table)
 
-people_placer <- function(production_A_title, production_B_title, production_C_title) {
+people_placer <- function(production_A_title, production_B_title, production_C_title, file) {
   # ***** GLOBAL VARIABLES - entered by user in app - ENTER THEM ALPHABETICALLY *****
   
   # replace spaces with underscores
@@ -22,7 +22,7 @@ people_placer <- function(production_A_title, production_B_title, production_C_t
   
   
   # ** ACTUAL GOOGLE FORMS DATA: CREATING MEMBERS DF -- VERY INCOMPLETE **
-  members = read.csv("TEST_ LUX Role Survey AU19 (Responses) - Form Responses 1.csv", stringsAsFactors=FALSE)
+  members = read.csv(file, stringsAsFactors=FALSE)
   # delete timestamped row
   members <- members[,-1]
   # define column names

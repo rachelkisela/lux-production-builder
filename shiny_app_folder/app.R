@@ -1,5 +1,5 @@
 library(shiny)
-source("../lux people-placer program.R")
+source("lux people-placer program.R")
 
 
 ui <- fluidPage(
@@ -18,7 +18,7 @@ ui <- fluidPage(
     helpText("5. Click File -> Download as -> Comma-separated values (.csv, current sheet)"),
     helpText("6. Upload that file below:"),
     
-    fileInput("file1", "Upload CSV File",
+    fileInput("file", "Upload CSV File",
               multiple = FALSE,
               accept = (".csv")
              ),
@@ -36,11 +36,20 @@ ui <- fluidPage(
 
 server <- function(input, output) {
   
+  # requires all inputs to be filled
+  req(input$prod1title)
+  req(input$prod2title)
+  req(input$prod3title)
+  req(input$file)
+  
+  files <- reactive({
+    files <- people_placer(input$prod1title, input$prod2title, input$prod3title, input$file)
+  })
+  
   output$downloadData <- downloadHandler(
     # save 3 Excel files in a ZIP folder
-    files <- people_placer(input$prod1title, input$prod2title, input$prod3title),
     filename = "productions.zip",
-    content = zip(files)
+    content = zip(files())
   )
   
 
