@@ -36,20 +36,34 @@ ui <- fluidPage(
 
 server <- function(input, output) {
   
-  # requires all inputs to be filled
-  req(input$prod1title)
-  req(input$prod2title)
-  req(input$prod3title)
-  req(input$file)
-  
-  files <- reactive({
-    files <- people_placer(input$prod1title, input$prod2title, input$prod3title, input$file)
-  })
+  # these lines require all inputs to be filled - not sure if this is necessary, I saw it online lol
+  #req(input$prod1title)
+  #req(input$prod2title)
+  #req(input$prod3title)
+  #req(input$file)
+
   
   output$downloadData <- downloadHandler(
     # save 3 Excel files in a ZIP folder
-    filename = "productions.zip",
-    content = zip(files())
+    filename = 'productions.zip',
+    content = function() {
+      # ** this was all stuff i found on stackoverflow...i have no idea what it means
+      #fs <- c()
+      #tmpdir <- tempdir()
+      #setwd(tempdir())
+      #print (tempdir())
+      
+      fs <- reactive({
+        if(is.null(input$prod1title) | is.null(input$prod2title) | is.null(input$prod3title) | is.null(input$file)) {
+          return(NULL) 
+        }
+        fs <- people_placer(input$prod1title, input$prod2title, input$prod3title, input$file)
+      })
+      
+      
+      zip(zipfile = "productions.zip", files = fs)
+    },
+    contentType = "application/zip"
   )
   
 

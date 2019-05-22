@@ -295,13 +295,15 @@ people_placer <- function(production_A_title, production_B_title, production_C_t
   
   # ********* EXPORTING RESULTS *********
   
-  # # write row names to its own column, then write final results to Excel spreadsheets and save in working directory 
+  # # write row names to its own column, then write final results to Excel spreadsheets and save in working directory
+# *** 5/22 - MAYBE MOVE THIS TO APP.R??? *** 
   return(
     for (i in 1:3) {
       setDT(prod_df_list[[i]], keep.rownames = TRUE)[]
       write_xlsx(prod_df_list[[i]], paste0(production_titles_u[i], ".xlsx"))
     }
  )
+# *** END ***
   
   # NOTE:
   # *** How to view final production dfs within RStudio for testing:
