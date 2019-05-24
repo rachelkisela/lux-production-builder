@@ -21,7 +21,7 @@ people_placer <- function(production_A_title, production_B_title, production_C_t
   
   
   
-  # ** ACTUAL GOOGLE FORMS DATA: CREATING MEMBERS DF -- VERY INCOMPLETE **
+  # ** ACTUAL GOOGLE FORMS DATA: CREATING MEMBERS DF **
   members = read.csv(file, stringsAsFactors=FALSE)
   # delete timestamped row
   members <- members[,-1]
@@ -266,7 +266,6 @@ people_placer <- function(production_A_title, production_B_title, production_C_t
   prod_df_list <- list(production_A, production_B, production_C)
   
   
-  
   # ********* PLACING PA's ON PRODUCTION DATAFRAMES *********
   # delete the top blank row
   pa <- pa[-1,]
@@ -296,13 +295,12 @@ people_placer <- function(production_A_title, production_B_title, production_C_t
   # ********* EXPORTING RESULTS *********
   
   # # write row names to its own column, then write final results to Excel spreadsheets and save in working directory
-# *** 5/22 - MAYBE MOVE THIS TO APP.R??? *** 
-  return(
-    for (i in 1:3) {
-      setDT(prod_df_list[[i]], keep.rownames = TRUE)[]
-      write_xlsx(prod_df_list[[i]], paste0(production_titles_u[i], ".xlsx"))
-    }
- )
+    #for (i in 1:3) {
+   #   setDT(prod_df_list[[i]], keep.rownames = TRUE)[]
+   # }
+  
+  return(prod_df_list[[1]])
+  
 # *** END ***
   
   # NOTE:
@@ -312,4 +310,7 @@ people_placer <- function(production_A_title, production_B_title, production_C_t
   # View(prod_df_list[[3]])
   
 }
+
+# Local Test
+# testlist <- people_placer("Ace Ventura", "Blazing Saddles", "Contact", "TEST_ LUX Role Survey AU19 (Responses) - Form Responses 1.csv")
 

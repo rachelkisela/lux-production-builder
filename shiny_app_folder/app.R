@@ -18,7 +18,7 @@ ui <- fluidPage(
     helpText("5. Click File -> Download as -> Comma-separated values (.csv, current sheet)"),
     helpText("6. Upload that file below:"),
     
-    fileInput("file", "Upload CSV File",
+    fileInput("googleform", "Upload CSV File",
               multiple = FALSE,
               accept = (".csv")
              ),
@@ -41,29 +41,27 @@ server <- function(input, output) {
   #req(input$prod2title)
   #req(input$prod3title)
   #req(input$file)
-
+  
+  prodinputtest <- reactive({
+      people_placer(input$prod1title, input$prod2title, input$prod3title, input$googleform)
+  })
+  
+  fakefile <- reactive({
+    list1 <- c("1", "2", "3")
+    list2 <- c("a", "b", "c")
+    testdf <- data.frame(list1, list2)
+  })
   
   output$downloadData <- downloadHandler(
     # save 3 Excel files in a ZIP folder
-    filename = 'productions.zip',
-    content = function() {
-      # ** this was all stuff i found on stackoverflow...i have no idea what it means
-      #fs <- c()
-      #tmpdir <- tempdir()
-      #setwd(tempdir())
-      #print (tempdir())
-      
-      fs <- reactive({
-        if(is.null(input$prod1title) | is.null(input$prod2title) | is.null(input$prod3title) | is.null(input$file)) {
-          return(NULL) 
-        }
-        fs <- people_placer(input$prod1title, input$prod2title, input$prod3title, input$file)
-      })
-      
-      
-      zip(zipfile = "productions.zip", files = fs)
-    },
-    contentType = "application/zip"
+    
+    filename = "production1.csv",
+    
+    content = function(file) {
+      write.csv(fakefile(), file, row.names = TRUE)
+      #zip(zipfile = "productions.zip", files = fs)
+    }#,
+   # contentType = "application/zip"
   )
   
 
