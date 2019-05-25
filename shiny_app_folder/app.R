@@ -42,7 +42,10 @@ server <- function(input, output) {
   #req(input$prod3title)
   #req(input$file)
   
-  prodinputtest <- reactive({
+  
+  prodinput <- reactive({
+    # 5/25 i think it is a problem with this fxn. does it return a dataframe? not sure how to test in app.R. Works in
+    # its own file
       people_placer(input$prod1title, input$prod2title, input$prod3title, input$googleform)
   })
   
@@ -58,7 +61,7 @@ server <- function(input, output) {
     filename = "production1.csv",
     
     content = function(file) {
-      write.csv(fakefile(), file, row.names = TRUE)
+      write.csv(prodinput(), file, row.names = TRUE)
       #zip(zipfile = "productions.zip", files = fs)
     }#,
    # contentType = "application/zip"

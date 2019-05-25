@@ -9,7 +9,7 @@ library(devtools)
 library(writexl)
 library(data.table)
 
-people_placer <- function(production_A_title, production_B_title, production_C_title, file) {
+people_placer <- function(production_A_title, production_B_title, production_C_title, googleform) {
   # ***** GLOBAL VARIABLES - entered by user in app - ENTER THEM ALPHABETICALLY *****
   
   # replace spaces with underscores
@@ -22,7 +22,7 @@ people_placer <- function(production_A_title, production_B_title, production_C_t
   
   
   # ** ACTUAL GOOGLE FORMS DATA: CREATING MEMBERS DF **
-  members = read.csv(file, stringsAsFactors=FALSE)
+  members = read.csv(googleform, stringsAsFactors=FALSE)
   # delete timestamped row
   members <- members[,-1]
   # define column names
@@ -294,7 +294,7 @@ people_placer <- function(production_A_title, production_B_title, production_C_t
   
   # ********* EXPORTING RESULTS *********
   
-  # # write row names to its own column, then write final results to Excel spreadsheets and save in working directory
+  # # write row names to its own column, then return csv file
     #for (i in 1:3) {
    #   setDT(prod_df_list[[i]], keep.rownames = TRUE)[]
    # }
