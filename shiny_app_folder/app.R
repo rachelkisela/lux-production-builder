@@ -48,6 +48,7 @@ server <- function(input, output) {
     # its own file
       people_placer(input$prod1title, input$prod2title, input$prod3title, input$googleform)
   })
+  browser()
   
   fakefile <- reactive({
     list1 <- c("1", "2", "3")
