@@ -294,13 +294,8 @@ people_placer <- function(production_A_title, production_B_title, production_C_t
   
   # ********* EXPORTING RESULTS *********
   
-  # # write row names to its own column, then return csv file
-    #for (i in 1:3) {
-   #   setDT(prod_df_list[[i]], keep.rownames = TRUE)[]
-   # }
-  
   return(prod_df_list[[1]])
-  
+
 # *** END ***
   
   # NOTE:

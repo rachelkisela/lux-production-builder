@@ -1,6 +1,6 @@
 library(shiny)
 source("lux people-placer program.R")
-
+# NOTE 6/3 use showReactLog() in console to show reactive values
 
 ui <- fluidPage(
   
@@ -36,19 +36,15 @@ ui <- fluidPage(
 
 server <- function(input, output) {
   
-  # these lines require all inputs to be filled - not sure if this is necessary, I saw it online lol
-  #req(input$prod1title)
-  #req(input$prod2title)
-  #req(input$prod3title)
-  #req(input$file)
-  
-  
   prodinput <- reactive({
-    # 5/25 i think it is a problem with this fxn. does it return a dataframe? not sure how to test in app.R. Works in
+    # * 5/25 i think it is a problem with this fxn. does it return a dataframe? not sure how to test in app.R. Works in
     # its own file
-      people_placer(input$prod1title, input$prod2title, input$prod3title, input$googleform)
+    # * 6/3 according to showReactLog(), this fxn is running multiple times with no new input values so it returns a blank
+    # file. I believe that is why "content" can't recognize file as a character string, because prodinput() is skipped
+    # over b/c it is empty. MUST FIGURE OUT - WHY is it running multiple times? use isolate() to freeze input$ values?
+    req(input$prod1title, input$prod2title, input$prod3title, input$googleform)
+    people_placer(input$prod1title, input$prod2title, input$prod3title, input$googleform)
   })
-  browser()
   
   fakefile <- reactive({
     list1 <- c("1", "2", "3")
@@ -57,14 +53,13 @@ server <- function(input, output) {
   })
   
   output$downloadData <- downloadHandler(
-    # save 3 Excel files in a ZIP folder
-    
+    # future: save 3 Excel files in a ZIP folder
     filename = "production1.csv",
     
     content = function(file) {
       write.csv(prodinput(), file, row.names = TRUE)
       #zip(zipfile = "productions.zip", files = fs)
-    }#,
+    }#
    # contentType = "application/zip"
   )
   
