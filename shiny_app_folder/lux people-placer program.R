@@ -4,10 +4,11 @@
 # ^^ RACHEL ONLY ^^ 
 
 # load libraries
-library(dplyr)
+# alibrary(dplyr)
 library(devtools)
 library(writexl)
 library(data.table)
+
 
 people_placer <- function(production_A_title, production_B_title, production_C_title, googleform) {
   # ***** GLOBAL VARIABLES - entered by user in app - ENTER THEM ALPHABETICALLY *****
@@ -294,15 +295,7 @@ people_placer <- function(production_A_title, production_B_title, production_C_t
   
   # ********* EXPORTING RESULTS *********
   
-  return(prod_df_list[[1]])
-
-# *** END ***
-  
-  # NOTE:
-  # *** How to view final production dfs within RStudio for testing:
-  # View(prod_df_list[[1]])
-  # View(prod_df_list[[2]])
-  # View(prod_df_list[[3]])
+return(prod_df_list[[1]])
   
 }
 

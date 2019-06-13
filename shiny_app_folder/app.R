@@ -36,24 +36,30 @@ ui <- fluidPage(
 
 server <- function(input, output) {
   
-  prodinput <- reactive({
-    # * 5/25 i think it is a problem with this fxn. does it return a dataframe? not sure how to test in app.R. Works in
-    # its own file
-    # * 6/3 according to showReactLog(), this fxn is running multiple times with no new input values so it returns a blank
-    # file. I believe that is why "content" can't recognize file as a character string, because prodinput() is skipped
-    # over b/c it is empty. MUST FIGURE OUT - WHY is it running multiple times? use isolate() to freeze input$ values?
+
+#    xprod1title <- reactive({input$prod1title})
+ #   xprod2title <- reactive({input$prod2title})
+#    xprod3title <- reactive({input$prod3title})
+#    xgoogleform <- reactive({input$googleform})
+  
+  
+# prod_maker <- reactive({
+#   people_placer(input$prod1title, input$prod2title, input$prod3title, input$googlform)
+    
+# })
     
     # * 6/12 - tried the following lines of code, didnt work, commented out
     # req(input$prod1title, input$prod2title, input$prod3title, input$googleform)
-    # xprod1title <- get(isolate(input$prod1title))
-    # xprod2title <- get(isolate(input$prod2title))
-    # xprod3title <- get(isolate(input$prod3title))
-    # xgoogleform <- get(isolate(input$googleform))
-    # people_placer(xprod1title, xprod2title, xprod3title, xgoogleform)
-    # ** BRILLIANT IDEA - we store the prod1titles as strings so we no longer deal with "input$" and it essentially
-    #   functions as fakefile() - or is it an issue with "googleform"?
+#    xprod1title <- isolate(input$prod1title)
+#    xprod2title <- isolate(input$prod2title)
+#    xprod3title <- isolate(input$prod3title)
+#    xgoogleform <- isolate(input$googleform)
     
-    people_placer(input$prod1title, input$prod2title, input$prod3title, input$googleform)
+#    people_placer(xprod1title, xprod2title, xprod3title, xgoogleform)
+  
+  
+  prodmaker() <- reactive({
+    people_placer(input$prod1title, input$prod2title, input$prod3title, input$googlform)
   })
   
   fakefile <- reactive({
@@ -67,7 +73,7 @@ server <- function(input, output) {
     filename = "production1.csv",
     
     content = function(file) {
-      write.csv(prodinput(), file, row.names = TRUE)
+      write.csv(prodmaker(), file, row.names = TRUE)
       #zip(zipfile = "productions.zip", files = fs)
     }#
    # contentType = "application/zip"
