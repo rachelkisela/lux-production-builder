@@ -42,7 +42,17 @@ server <- function(input, output) {
     # * 6/3 according to showReactLog(), this fxn is running multiple times with no new input values so it returns a blank
     # file. I believe that is why "content" can't recognize file as a character string, because prodinput() is skipped
     # over b/c it is empty. MUST FIGURE OUT - WHY is it running multiple times? use isolate() to freeze input$ values?
-    req(input$prod1title, input$prod2title, input$prod3title, input$googleform)
+    
+    # * 6/12 - tried the following lines of code, didnt work, commented out
+    # req(input$prod1title, input$prod2title, input$prod3title, input$googleform)
+    # xprod1title <- get(isolate(input$prod1title))
+    # xprod2title <- get(isolate(input$prod2title))
+    # xprod3title <- get(isolate(input$prod3title))
+    # xgoogleform <- get(isolate(input$googleform))
+    # people_placer(xprod1title, xprod2title, xprod3title, xgoogleform)
+    # ** BRILLIANT IDEA - we store the prod1titles as strings so we no longer deal with "input$" and it essentially
+    #   functions as fakefile() - or is it an issue with "googleform"?
+    
     people_placer(input$prod1title, input$prod2title, input$prod3title, input$googleform)
   })
   
