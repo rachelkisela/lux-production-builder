@@ -36,6 +36,7 @@ ui <- fluidPage(
 
 server <- function(input, output) {
   
+# BELOW ARE METHODS WE'VE TRIED TO FIX OUR ERROR MESSAGES:
 
 #    xprod1title <- reactive({input$prod1title})
  #   xprod2title <- reactive({input$prod2title})
@@ -58,11 +59,11 @@ server <- function(input, output) {
 #    people_placer(xprod1title, xprod2title, xprod3title, xgoogleform)
   
   
-  prodmaker() <- reactive({
-    people_placer(input$prod1title, input$prod2title, input$prod3title, input$googlform)
+  prodmaker <- reactive({
+    people_placer(input$prod1title, input$prod2title, input$prod3title, input$googleform)
   })
   
-  fakefile <- reactive({
+  fake_df <- reactive({
     list1 <- c("1", "2", "3")
     list2 <- c("a", "b", "c")
     testdf <- data.frame(list1, list2)

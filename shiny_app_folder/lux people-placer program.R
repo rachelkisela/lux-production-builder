@@ -1,10 +1,5 @@
-
-
-#setwd("~/Desktop/lux-people-placer")
-# ^^ RACHEL ONLY ^^ 
-
 # load libraries
-# alibrary(dplyr)
+# library(dplyr)
 library(devtools)
 library(writexl)
 library(data.table)
