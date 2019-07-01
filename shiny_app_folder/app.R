@@ -74,10 +74,10 @@ server <- function(input, output) {
     filename = "production1.csv",
     
     content = function(file) {
-      write.csv(prodmaker(), file, row.names = TRUE)
-      #zip(zipfile = "productions.zip", files = fs)
-    }#
-   # contentType = "application/zip"
+      #write.csv(prodmaker(), file, row.names = TRUE)
+      zip(zipfile = "productions.zip", files = fs)
+    }
+    contentType = "application/zip"
   )
   
 

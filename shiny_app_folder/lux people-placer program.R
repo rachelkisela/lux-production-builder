@@ -18,7 +18,8 @@ people_placer <- function(production_A_title, production_B_title, production_C_t
   
   
   # ** ACTUAL GOOGLE FORMS DATA: CREATING MEMBERS DF **
-  members = read.csv(googleform, stringsAsFactors=FALSE)
+  path <- paste0("../",googleform[1])
+  members = read.csv(path, stringsAsFactors=FALSE)
   # delete timestamped row
   members <- members[,-1]
   # define column names
