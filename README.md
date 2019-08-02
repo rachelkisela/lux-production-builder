@@ -1,4 +1,4 @@
-# lux-people-placer
+# lux-production-builder
 INPUT: CSV spreadsheet taken from Google Forms of quarterly LUX Film Production Club member survey responses
 OUTPUT: Several spreadsheets of role placements for every production
 
