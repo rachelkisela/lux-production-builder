@@ -24,6 +24,11 @@ ui <- fluidPage(
               accept = (".csv")
              ),
     
+    # NOTE 8/1: We will use num_productions as a global variable to allow flexibility in
+    # future iterations.
+    helpText("How many productions this quarter?"), 
+    numericInput("num_productions", label = NULL, value = 3, min = 1),
+    
     helpText("Please enter the 3 production titles below (any order):"),      
     textInput("prod1title", label = h6("First production title:")),
     textInput("prod2title", label = h6("Second production title:")),

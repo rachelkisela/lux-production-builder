@@ -1,12 +1,11 @@
 # load libraries
-# library(dplyr)
 library(devtools)
 library(writexl)
 library(data.table)
 
 
 people_placer <- function(production_A_title, production_B_title, production_C_title, googleform) {
-  # ***** GLOBAL VARIABLES - entered by user in app *****
+  # ***** COMMONLY USED VARIABLES - entered by user in app *****
   
   # replace spaces with underscores
   production_A_title_u <- gsub(" ", "_", production_A_title)
