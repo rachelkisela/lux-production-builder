@@ -1,6 +1,6 @@
 library(shiny)
 library(stringr)
-source("lux people-placer program.R")
+source("lux_production_builder_program.R")
 # NOTE 6/3 use showReactLog() in console to show reactive values
 
 ui <- fluidPage(
