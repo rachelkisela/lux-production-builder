@@ -6,7 +6,7 @@ library(data.table)
 
 
 people_placer <- function(production_A_title, production_B_title, production_C_title, googleform) {
-  # ***** GLOBAL VARIABLES - entered by user in app - ENTER THEM ALPHABETICALLY *****
+  # ***** GLOBAL VARIABLES - entered by user in app *****
   
   # replace spaces with underscores
   production_A_title_u <- gsub(" ", "_", production_A_title)
@@ -19,7 +19,7 @@ people_placer <- function(production_A_title, production_B_title, production_C_t
   
   # ** ACTUAL GOOGLE FORMS DATA: CREATING MEMBERS DF **
   path <- paste0("../",googleform[1])
-  members = read.csv(path, stringsAsFactors=FALSE)
+  members = read.csv(path, stringsAsFactors = FALSE)
   # delete timestamped row
   members <- members[,-1]
   # define column names

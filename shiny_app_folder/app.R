@@ -1,4 +1,5 @@
 library(shiny)
+library(stringr)
 source("lux people-placer program.R")
 # NOTE 6/3 use showReactLog() in console to show reactive values
 
@@ -23,7 +24,7 @@ ui <- fluidPage(
               accept = (".csv")
              ),
     
-    helpText("Please alphabetically enter the 3 production titles below:"),      
+    helpText("Please enter the 3 production titles below (any order):"),      
     textInput("prod1title", label = h6("First production title:")),
     textInput("prod2title", label = h6("Second production title:")),
     textInput("prod3title", label = h6("Third production title:")),
@@ -32,49 +33,16 @@ ui <- fluidPage(
     )
 )
 
-
-
 server <- function(input, output) {
-  
-# BELOW ARE METHODS WE'VE TRIED TO FIX OUR ERROR MESSAGES:
-
-#    xprod1title <- reactive({input$prod1title})
- #   xprod2title <- reactive({input$prod2title})
-#    xprod3title <- reactive({input$prod3title})
-#    xgoogleform <- reactive({input$googleform})
-  
-  
-# prod_maker <- reactive({
-#   people_placer(input$prod1title, input$prod2title, input$prod3title, input$googlform)
-    
-# })
-    
-    # * 6/12 - tried the following lines of code, didnt work, commented out
-    # req(input$prod1title, input$prod2title, input$prod3title, input$googleform)
-#    xprod1title <- isolate(input$prod1title)
-#    xprod2title <- isolate(input$prod2title)
-#    xprod3title <- isolate(input$prod3title)
-#    xgoogleform <- isolate(input$googleform)
-    
-#    people_placer(xprod1title, xprod2title, xprod3title, xgoogleform)
-  
-  
   prodmaker <- reactive({
     people_placer(input$prod1title, input$prod2title, input$prod3title, input$googleform)
   })
-  
-#  fake_df <- reactive({
-#    list1 <- c("1", "2", "3")
-#    list2 <- c("a", "b", "c")
-#    testdf <- data.frame(list1, list2)
-#  })
   
   output$downloadData <- downloadHandler(
     
     filename = "productions.zip",
     
     content = function(file) {
-      
       # write all CSV files, and attach underscored file names to them.
       # note: prodmaker() returns prod. dataframes (1-3) and underscored filenames (4-6)
       fs <- c(prodmaker()[[4]], prodmaker()[[5]], prodmaker()[[6]])
