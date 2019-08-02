@@ -288,10 +288,14 @@ people_placer <- function(production_A_title, production_B_title, production_C_t
     prod_df_list[[i]] <- rbind(prod_df_list[[i]], "Production Assistant" = split)
   }
   
+  # ********* CREATING USABLE FILENAMES *********
+  
+filenames <- paste0(production_titles_u, ".csv")
   
   # ********* EXPORTING RESULTS *********
-  
-return(prod_df_list[[1]])
+
+# returns prod. dataframes (1-3) and underscored filenames (4-6)
+return(c(prod_df_list, filenames))
   
 }
 

@@ -63,25 +63,29 @@ server <- function(input, output) {
     people_placer(input$prod1title, input$prod2title, input$prod3title, input$googleform)
   })
   
-  fake_df <- reactive({
-    list1 <- c("1", "2", "3")
-    list2 <- c("a", "b", "c")
-    testdf <- data.frame(list1, list2)
-  })
+#  fake_df <- reactive({
+#    list1 <- c("1", "2", "3")
+#    list2 <- c("a", "b", "c")
+#    testdf <- data.frame(list1, list2)
+#  })
   
   output$downloadData <- downloadHandler(
-    # future: save 3 Excel files in a ZIP folder
-    filename = "production1.csv",
+    
+    filename = "productions.zip",
     
     content = function(file) {
-      #write.csv(prodmaker(), file, row.names = TRUE)
-      zip(zipfile = "productions.zip", files = fs)
-    }
-    contentType = "application/zip"
+      
+      # write all CSV files, and attach underscored file names to them.
+      # note: prodmaker() returns prod. dataframes (1-3) and underscored filenames (4-6)
+      fs <- c(prodmaker()[[4]], prodmaker()[[5]], prodmaker()[[6]])
+      write.csv(prodmaker()[[1]], file = fs[1], sep =",")
+      write.csv(prodmaker()[[2]], file = fs[2], sep =",")
+      write.csv(prodmaker()[[3]], file = fs[3], sep =",")
+        
+      zip(zipfile = file, files = fs)
+      },
+      contentType = "application/zip"
   )
-  
-
 }
 
 shinyApp(ui, server)
-
