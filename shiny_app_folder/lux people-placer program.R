@@ -4,7 +4,7 @@ library(writexl)
 library(data.table)
 
 
-people_placer <- function(production_A_title, production_B_title, production_C_title, googleform) {
+people_placer <- function(production_A_title, production_B_title, production_C_title, googleform, num_productions) {
   # ***** COMMONLY USED VARIABLES - entered by user in app *****
   
   # replace spaces with underscores
@@ -17,10 +17,8 @@ people_placer <- function(production_A_title, production_B_title, production_C_t
   
   
   # ** ACTUAL GOOGLE FORMS DATA: CREATING MEMBERS DF **
-  path <- paste0("../",googleform[1])
-  members = read.csv(path, stringsAsFactors = FALSE)
   # delete timestamped row
-  members <- members[,-1]
+  members <- googleform[,-1]
   # define column names
   column_names <- c("email", "name", "years_in_lux", "years_at_uw", "writer/director?",
                     "writer/director film", "pref_prod_1", "pref_prod_2", "pref_prod_3",

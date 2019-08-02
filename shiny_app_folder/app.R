@@ -27,21 +27,41 @@ ui <- fluidPage(
     # NOTE 8/1: We will use num_productions as a global variable to allow flexibility in
     # future iterations.
     helpText("How many productions this quarter?"), 
+    helpText("(NOTE: As of now, this web app only works for 3 productions! This input box is for testing only.)"), 
     numericInput("num_productions", label = NULL, value = 3, min = 1),
     
-    helpText("Please enter the 3 production titles below (any order):"),      
-    textInput("prod1title", label = h6("First production title:")),
-    textInput("prod2title", label = h6("Second production title:")),
-    textInput("prod3title", label = h6("Third production title:")),
+    helpText("Please enter the production titles below (any order):"),
+    # Place to hold dynamic inputs
+    uiOutput("inputGroup"),
     
-    downloadButton("downloadData", "Download 3 Production Spreadsheets")
+    downloadButton("downloadData", "Download Production Spreadsheets")
     )
 )
 
 server <- function(input, output) {
-  prodmaker <- reactive({
-    people_placer(input$prod1title, input$prod2title, input$prod3title, input$googleform)
+  
+  # ** DYNAMIC # OF INPUTS
+  observeEvent(input$num_productions, {
+    output$inputGroup = renderUI({
+      input_list <- lapply(1:input$num_productions, function(i) {
+        # for each dynamically generated input, give a different name
+        inputName <- paste("prod", i, "title", sep = "")
+        textInput(inputName, label = h5("Production title:"))
+    })
+    do.call(tagList, input_list)
   })
+  })
+  # ** DYNAMIC # OF INPUTS
+  
+  prodmaker <- reactive({
+    if(is.null(input$googleform)) {
+      return(NULL)
+    }
+    filestr <- input$googleform
+    googleformfile <- read.csv(filestr$datapath, stringsAsFactors = FALSE)
+    people_placer(input$prod1title, input$prod2title, input$prod3title, googleformfile, input$num_productions)
+  })
+
   
   output$downloadData <- downloadHandler(
     
@@ -51,9 +71,9 @@ server <- function(input, output) {
       # write all CSV files, and attach underscored file names to them.
       # note: prodmaker() returns prod. dataframes (1-3) and underscored filenames (4-6)
       fs <- c(prodmaker()[[4]], prodmaker()[[5]], prodmaker()[[6]])
-      write.csv(prodmaker()[[1]], file = fs[1], sep =",")
-      write.csv(prodmaker()[[2]], file = fs[2], sep =",")
-      write.csv(prodmaker()[[3]], file = fs[3], sep =",")
+      write.csv(prodmaker()[[1]], file = fs[1]) #, sep =",")
+      write.csv(prodmaker()[[2]], file = fs[2]) #, sep =",")
+      write.csv(prodmaker()[[3]], file = fs[3]) #, sep =",")
         
       zip(zipfile = file, files = fs)
       },
