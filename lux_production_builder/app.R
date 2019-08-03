@@ -12,7 +12,6 @@ ui <- fluidPage(
       style = "display: block; margin-left: auto; margin-right: auto;"), # This line centers the logo
   # App title ----
   column(5, offset = 4, titlePanel("The LUX Production Builder")),
-  #tags$style(HTML("The LUX Production Builder")), # LEFT OFF HERE 8/2 4:21PM
   
   
   mainPanel(
@@ -32,6 +31,16 @@ ui <- fluidPage(
               multiple = FALSE,
               accept = (".csv")
              ),
+    
+    HTML("Enter the quarter and year:"),
+    selectInput("quarter", "Quarter:",
+                c("Autumn" = "AU",
+                  "Winter" = "WI",
+                  "Spring" = "SP",
+                  "Summer" = "SU")),
+    numericInput("year", "Year:", 19, min = 00, max = 99),
+    HTML("<br>"),
+    
     
     # NOTE 8/1: We will use num_productions as a global variable to allow flexibility in
     # future iterations.
@@ -67,6 +76,7 @@ server <- function(input, output) {
   })
   # ** DYNAMIC # OF INPUTS
   
+  # "prodmaker()" calls the algorithm file
   prodmaker <- reactive({
     if (is.null(input$googleform)) {
       return(NULL)
@@ -79,12 +89,12 @@ server <- function(input, output) {
   
   output$downloadData <- downloadHandler(
     
-    filename = "productions.zip",
+    filename = paste0(input$quarter, input$year, "_LUX_productions.zip"),
     
     content = function(file) {
       # write all CSV files, and attach underscored file names to them.
       # note: prodmaker() returns prod. dataframes (1-3) and underscored filenames (4-6)
-      fs <- c(prodmaker()[[4]], prodmaker()[[5]], prodmaker()[[6]])
+      fs <- paste0(input$quarter, input$year, "_", c(prodmaker()[[4]], prodmaker()[[5]], prodmaker()[[6]]))
       write.csv(prodmaker()[[1]], file = fs[1])
       write.csv(prodmaker()[[2]], file = fs[2])
       write.csv(prodmaker()[[3]], file = fs[3])
