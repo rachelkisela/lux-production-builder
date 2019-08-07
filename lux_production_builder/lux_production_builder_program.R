@@ -4,17 +4,17 @@ library(writexl)
 library(data.table)
 
 
-people_placer <- function(production_A_title, production_B_title, production_C_title, googleform, num_productions) {
+#people_placer <- function(production_A_title, production_B_title, production_C_title, googleform, num_productions) {
+people_placer <- function(production_titles, googleform, num_productions) {
   # ***** COMMONLY USED VARIABLES - entered by user in app *****
   
   # replace spaces with underscores
-  production_A_title_u <- gsub(" ", "_", production_A_title)
-  production_B_title_u <- gsub(" ", "_", production_B_title)
-  production_C_title_u <- gsub(" ", "_", production_C_title)
-  
-  production_titles_u <- c(production_A_title_u, production_B_title_u, production_C_title_u)
-  
-  
+  production_titles_u <- c()
+  for (i in 1:num_productions) {
+    next_item <- gsub(" ", "_", production_titles[i])
+    production_titles_u <- c(production_titles_u, next_item)
+  }
+
   
   # ** ACTUAL GOOGLE FORMS DATA: CREATING MEMBERS DF **
   # delete timestamped row
@@ -42,11 +42,11 @@ people_placer <- function(production_A_title, production_B_title, production_C_t
   production$roles <- NULL
   
   # create column titles corresponding to each production
-  prod_1_column_names <- sapply(column_names, function(x) paste0(production_titles_u[1], "_", x))
-  prod_2_column_names <- sapply(column_names, function(x) paste0(production_titles_u[2], "_", x))
-  prod_3_column_names <- sapply(column_names, function(x) paste0(production_titles_u[3], "_", x))
-  # combine all column titles into one giant list of column titles
-  all_column_names <- c(prod_1_column_names, prod_2_column_names, prod_3_column_names)
+  all_column_names <- c()
+  for (i in 1:num_productions) {
+    next_item <- sapply(column_names, function(x) paste0(production_titles_u[i], "_", x))
+    all_column_names <- c(all_column_names, next_item)
+  }
   
   # create 1 big "production" dataframe, name the columns and make every cell "NA"
   production[,all_column_names] <- NA
@@ -251,13 +251,13 @@ people_placer <- function(production_A_title, production_B_title, production_C_t
       # allows loop to remember the # of iteration
     }
   }
-  # THEN, split the 1 big production df into 3 separate productions dfs
-  production_A <- production[1:14]
-  production_B <- production[15:28]
-  production_C <- production[29:42]
   
+  # THEN, split the 1 big production df into 3 separate productions dfs and
   # create a list of all production dataframes for variable-free referencing
-  prod_df_list <- list(production_A, production_B, production_C)
+  prod_df_list <- vector('list', num_productions)
+  for (i in 1:num_productions) {
+    prod_df_list[[i]] <- production[(1 + ((i - 1) * 14)):(i * 14)]
+  }
   
   
   # ********* PLACING PA's ON PRODUCTION DATAFRAMES *********

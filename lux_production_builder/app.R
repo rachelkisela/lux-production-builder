@@ -18,12 +18,12 @@ ui <- fluidPage(
     
     HTML("<font size=+1>This app will intake Google Forms data to create downloadable production spreadsheets.<br><br>
          HOW TO USE THIS APP:</font><br>
-         <b>1.</b> Go to the Google Form page for this quarter's productions<br>
-         <b>2.</b> Click \"Responses\"<br>
-         <b>3.</b> Click the square green Sheets icon (hover = \"View reponses in Sheets\")
-                   in the upper right side of the screen<br>
+         <b>1.</b> Go to the Google Form page for this quarter's productions.<br>
+         <b>2.</b> Click \"Responses.\"<br>
+         <b>3.</b> Click the square green Sheets icon in the upper right side of the screen
+                   and create a spreadsheet.<br>
          <b>4.</b> Once the Google Sheet loads, make sure there are no gaps in the rows.
-                   If there are, drag up rows so there are no blank rows<br>
+                   If there are, drag up rows so there are no blank rows.<br>
          <b>5.</b> Click File -> Download as -> Comma-separated values (.csv, current sheet)<br>
          <b>6.</b> Upload that file below:<br><br>"),
     
@@ -44,9 +44,7 @@ ui <- fluidPage(
     
     # NOTE 8/1: We will use num_productions as a global variable to allow flexibility in
     # future iterations.
-    HTML("How many productions this quarter?<br>
-         <i>(NOTE: As of now, this web app only works for 3 productions!
-         This input box is for testing only.)</i>"), 
+    HTML("How many productions this quarter?"),
     numericInput("num_productions", label = NULL, value = 3, min = 1),
     HTML("<br>"),
     
@@ -78,12 +76,20 @@ server <- function(input, output) {
   
   # "prodmaker()" calls the algorithm file
   prodmaker <- reactive({
+    # * these lines read the google form ahead of time
     if (is.null(input$googleform)) {
       return(NULL)
     }
     filestr <- input$googleform
     googleformfile <- read.csv(filestr$datapath, stringsAsFactors = FALSE)
-    people_placer(input$prod1title, input$prod2title, input$prod3title, googleformfile, input$num_productions)
+    # *
+    
+    # ** these lines create a list of production titles that varies in length
+    #    depending on the number of productions this quarter.
+    production_titles <- sapply(1:input$num_productions, function(i) {input[[paste0("prod", i, "title")]]})
+    # **
+
+    people_placer(production_titles, googleformfile, input$num_productions)
   })
 
   
@@ -93,12 +99,13 @@ server <- function(input, output) {
     
     content = function(file) {
       # write all CSV files, and attach underscored file names to them.
-      # note: prodmaker() returns prod. dataframes (1-3) and underscored filenames (4-6)
-      fs <- paste0(input$quarter, input$year, "_", c(prodmaker()[[4]], prodmaker()[[5]], prodmaker()[[6]]))
-      write.csv(prodmaker()[[1]], file = fs[1])
-      write.csv(prodmaker()[[2]], file = fs[2])
-      write.csv(prodmaker()[[3]], file = fs[3])
-        
+      # note: prodmaker() returns prod. dataframes (if num_productions = 3, 1 to 3)
+      #       and underscored filenames (4 to 6)
+      fs <- c()
+      for (i in 1:input$num_productions) {
+        fs <- c(fs, paste0(input$quarter, input$year, "_", c(prodmaker()[[input$num_productions + i]])))
+        write.csv(prodmaker()[[i]], file = fs[i])
+      }
       zip(zipfile = file, files = fs)
       },
       contentType = "application/zip"
