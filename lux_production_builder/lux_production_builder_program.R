@@ -1,7 +1,8 @@
 # load libraries
 library(devtools)
-library(writexl)
 library(data.table)
+library(dplyr)
+library(tibble)
 
 
 #people_placer <- function(production_A_title, production_B_title, production_C_title, googleform, num_productions) {
@@ -285,13 +286,18 @@ people_placer <- function(production_titles, googleform, num_productions) {
     prod_df_list[[i]] <- rbind(prod_df_list[[i]], "Production Assistant" = split)
   }
   
+  #8/8 TESTING MAKING MASTER DF
+  #prod_df_list[[num_productions + 1]] <- rbindlist(prod_df_list, use.names = TRUE, fill = TRUE)
+  #prod_df_list[[num_productions + 1]] <- bind_cols(lapply(prod_df_list, add_rownames)) ## THIS ONE TOO MANY ROWS
+  #prod_df_list[[num_productions + 1]] <- merge(prod_df_list, by = "row.names", all.x = T)
+  
   # ********* CREATING USABLE FILENAMES *********
   
-filenames <- paste0(production_titles_u, ".csv")
+filenames <- c(paste0(production_titles_u, ".csv")) #8/8 TESTING MAKING MASTER DF->  , "MASTER.csv")
   
   # ********* EXPORTING RESULTS *********
 
-# returns prod. dataframes (1-3) and underscored filenames (4-6)
+# returns prod. dataframes and underscored filenames
 return(c(prod_df_list, filenames))
   
 }
