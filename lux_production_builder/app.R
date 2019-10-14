@@ -2,7 +2,6 @@ library(shiny)
 library(stringr)
 library(shinyWidgets)
 source("lux_production_builder_program.R")
-# NOTE 6/3 use showReactLog() in console to show reactive values
 
 ui <- fluidPage(
   setBackgroundColor(color = "#fffbf0"),
@@ -12,7 +11,7 @@ ui <- fluidPage(
   img(src = "luxlogo.png", height = "10%", width = "10%", 
       style = "display: block; margin-left: auto; margin-right: auto;"), # This line centers the logo
   # App title ----
-  column(5, offset = 4, titlePanel("The LUX Production Builder")),
+  HTML("<center><b><font size=+3>The LUX Production Builder</font></b></center>"),
   
   
   mainPanel(
@@ -42,7 +41,6 @@ ui <- fluidPage(
     numericInput("year", "Year:", 19, min = 00, max = 99),
     HTML("<br>"),
     
-    
     # num_productions allows us to vary the number of productions depending on the quarter
     HTML("How many productions this quarter?"),
     numericInput("num_productions", label = NULL, value = 3, min = 1),
@@ -61,7 +59,7 @@ ui <- fluidPage(
 
 server <- function(input, output) {
   
-  # ** DYNAMIC # OF INPUTS
+  # ** DYNAMIC # OF INPUTS **
   observeEvent(input$num_productions, {
     output$inputGroup <- renderUI({
       input_list <- lapply(1:input$num_productions, function(i) {
@@ -72,20 +70,18 @@ server <- function(input, output) {
     do.call(tagList, input_list)
   })
   })
-  # ** DYNAMIC # OF INPUTS
+  # ** DYNAMIC # OF INPUTS ** 
   
   # "prodmaker()" calls the algorithm file
   prodmaker <- reactive({
     
     # * these lines save the google form to a variable before using it in the algorithm
-    if (is.null(input$googleform)) {
-      return(NULL)
-    }
+    req(input$googleform)
     filestr <- input$googleform
     googleformfile <- read.csv(filestr$datapath, stringsAsFactors = FALSE)
     # *
     
-    # ** this creates a list of production titles that varies in length
+    # this creates a list of production titles that varies in length
     #    depending on the number of productions this quarter.
     production_titles <- sapply(1:input$num_productions, function(i) {input[[paste0("prod", i, "title")]]})
 

@@ -5,9 +5,9 @@ account: rachelkisela
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1065697
-bundleId: 2299235
+bundleId: 2499747
 url: https://rachelkisela.shinyapps.io/lux_production_builder/
-when: 1565209762.47122
+when: 1571077071.44566
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: .csv|.RData|Ace_Ventura.csv|AU19_|AU19_Ace_Ventura.csv|AU19_Addams_Family.csv|AU19_Batman.csv|AU19_Blazing_Saddles.csv|AU19_Cars.csv|AU19_Contact.csv|AU19_Dracula.csv|Blazing_Saddles.csv|Contact.csv|WI19_Ace_Ventura.csv|WI19_Blazing_Saddles.csv|WI19_Contact.csv
+ignoredFiles: .csv|.RData

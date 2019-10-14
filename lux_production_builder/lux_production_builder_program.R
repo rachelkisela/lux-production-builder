@@ -1,11 +1,9 @@
-# load libraries
 library(devtools)
 library(data.table)
 library(dplyr)
 library(tibble)
 
 
-#people_placer <- function(production_A_title, production_B_title, production_C_title, googleform, num_productions) {
 people_placer <- function(production_titles, googleform, num_productions) {
   # ***** COMMONLY USED VARIABLES - entered by user in app *****
   
@@ -18,7 +16,7 @@ people_placer <- function(production_titles, googleform, num_productions) {
 
   
   # ** ACTUAL GOOGLE FORMS DATA: CREATING MEMBERS DF **
-  # delete timestamped row
+  # delete timestamped column
   members <- googleform[,-1]
   # define column names
   column_names <- c("email", "name", "years_in_lux", "years_at_uw", "writer/director?",
@@ -32,8 +30,8 @@ people_placer <- function(production_titles, googleform, num_productions) {
   # ** CREATING PRODUCTION DF **
   # list of roles, ordered by experience required
   roles <- c("Director", "Producer", "Special Effects", "Editor", "Director of Photography", "Assistant Director",
-             "Soundtrack", "Camera Operator", "Assistant Camera Operator", "Sound", "Makeup", "Art Department", "Costume",
-             "Script Supervisor")
+             "Soundtrack", "Camera Operator", "Assistant Camera Operator", "Sound Recordist", "Boom Operator", "Makeup",
+             "Art Department", "Costume", "Script Supervisor")
   
   # create 1 empty production dataframe
   production <- data.frame(roles)
@@ -69,7 +67,7 @@ people_placer <- function(production_titles, googleform, num_productions) {
   
   # sort members df by experience, so more experienced people get placed first
   members <- members[order(-members$years_in_lux, -members$years_at_uw),]
-  
+  View(members)
   
   # ** ALGORITHM **
   
@@ -95,13 +93,12 @@ people_placer <- function(production_titles, googleform, num_productions) {
         column_to_check <- gsub(" ", "_", column_to_check)
         # store the column # matching the column_to_check string for future use
         starting_column_number <- which(colnames(production) == column_to_check)
-        
         # place member on production df
         for (i in 1:14) {
           production["Director", starting_column_number - 1 + i] <- members[1, i]
           # "production" df is now updated with the new placement!
-          # delete the top row off of the "members" df 
         }
+        # delete the top row off of the "members" df 
         members <- members[-1,]
         member_just_placed <- TRUE
         break
@@ -117,7 +114,6 @@ people_placer <- function(production_titles, googleform, num_productions) {
       # store the row # matching the role_to_check string for future use
       starting_row_number <- which(rownames(production) == role_to_check)
       # paste together the correct column name to check in the "production" DF
-      
       column_to_check <- paste0(members[1, production_choice + 6], "_email")
       column_to_check <- gsub(" ", "_", column_to_check)
       # store the column # matching the column_to_check string for future use
@@ -127,7 +123,6 @@ people_placer <- function(production_titles, googleform, num_productions) {
       
       # ********* IMPORTANCE = ROLE *********
       if (members[1, "importance"] == "Role") {
-        
         # if the current "role to check" is a pa, copy & paste the member onto the PA df,
         # remove the top row of the members df, and begin placing the next member.
         if (role_to_check == "Production Assistant") {
@@ -147,7 +142,7 @@ people_placer <- function(production_titles, googleform, num_productions) {
           break
         }
         
-        if (is.na(production[role_to_check, column_to_check])) {   # if the cell is empty in the "production" df,
+        if (is.na(production[role_to_check, column_to_check])) { # if the cell is empty in the "production" df,
           
           # THEN place member's name & info into the "production" df.
           for (i in 1:14) {
@@ -165,21 +160,24 @@ people_placer <- function(production_titles, googleform, num_productions) {
           production_choice <- production_choice + 1
           
           if (production_choice == 4) {
-            
             production_choice <- 1
             role_choice <- role_choice + 1
-            
-            # if all choices are exhausted, add this member to the PA df
+           
+             # if all choices are exhausted, add this member to the PA df
             if (role_choice == 4 && production_choice == 1) {
-              
               for (i in 1:14) {
                 # copy name into PA df
                 pa[1, i] <- members[1, i]
-                
-                # add blank row to top of pa df
-                x <- rep(NA, ncol(pa))
-                pa <- rbind(x, pa)
               }
+              
+              # add blank row to top of pa df
+              x <- rep(NA, ncol(pa))
+              pa <- rbind(x, pa)
+              
+              # delete the top row off of the "members" df 
+              members <- members[-1,]
+              member_just_placed <- TRUE
+              break
               
             }
             
@@ -189,7 +187,6 @@ people_placer <- function(production_titles, googleform, num_productions) {
         
         # ********* IMPORTANCE = PRODUCTION *********
       } else {
-        
         # if the current "role to check" is a pa, copy & paste the member onto the PA df,
         # remove the top row of the members df, and begin placing the next member.
         if (role_to_check == "Production Assistant") {
@@ -235,11 +232,15 @@ people_placer <- function(production_titles, googleform, num_productions) {
               for (i in 1:14) {
                 # copy name into PA df
                 pa[1, i] <- members[1, i]
-                
-                # add blank row to top of pa df
-                x <- rep(NA, ncol(pa))
-                pa <- rbind(x, pa)
               }
+              # add blank row to top of pa df
+              x <- rep(NA, ncol(pa))
+              pa <- rbind(x, pa)
+              
+              # delete the top row off of the "members" df 
+              members <- members[-1,]
+              member_just_placed <- TRUE
+              break
               
             }
             
@@ -262,28 +263,30 @@ people_placer <- function(production_titles, googleform, num_productions) {
   
   
   # ********* PLACING PA's ON PRODUCTION DATAFRAMES *********
-  # delete the top blank row
-  pa <- pa[-1,]
-  # sort PAs by #1 preferred production
-  pa <- pa[order(pa$pref_prod_1),]
+  if (nrow(pa) > 1) { # ** ADDED THIS CHECK 10/14
+    # delete the top blank row
+    pa <- pa[-1,]
+    # sort PAs by #1 preferred production
+    pa <- pa[order(pa$pref_prod_1),]
   
-  # store indeces of unique values in pref_prod_1 column to find out where to split pa df
-  unique_indexes <- tapply(seq_along(pa$pref_prod_1), pa$pref_prod_1, identity)[unique(pa$pref_prod_1)]
-  unique_indexes <- lapply(unique_indexes, `[[`, 1) # only save first element from each list value
-  unique_indexes <- unlist(unique_indexes, use.names = FALSE) # turn list into a vector
+    # store indeces of unique values in pref_prod_1 column to find out where to split pa df
+    unique_indexes <- tapply(seq_along(pa$pref_prod_1), pa$pref_prod_1, identity)[unique(pa$pref_prod_1)]
+    unique_indexes <- lapply(unique_indexes, `[[`, 1) # only save first element from each list value
+    unique_indexes <- unlist(unique_indexes, use.names = FALSE) # turn list into a vector
   
   
-  for (i in 1:length(unique_indexes)) {
+    for (i in 1:length(unique_indexes)) {
     
-    if (i == length(unique_indexes)) {
-      split <- pa[unique_indexes[i]:nrow(pa),]
-    } else {
-      split <- pa[unique_indexes[i]:(unique_indexes[i + 1] - 1),]
+      if (i == length(unique_indexes)) {
+        split <- pa[unique_indexes[i]:nrow(pa),]
+      } else {
+        split <- pa[unique_indexes[i]:(unique_indexes[i + 1] - 1),] # ** ARGUMENT OF LENGHT 0 ON THIS LINE
+      }
+    
+      names(split) <- names(prod_df_list[[i]]) # change pa_df colnames to prod_df colnames to match for rbind fxn
+      # moving row(s) matching production to that production's dataframe
+      prod_df_list[[i]] <- rbind(prod_df_list[[i]], "Production Assistant" = split)
     }
-    
-    names(split) <- names(prod_df_list[[i]]) # change pa_df colnames to prod_df colnames to match for rbind fxn
-    # moving row(s) matching production to that production's dataframe
-    prod_df_list[[i]] <- rbind(prod_df_list[[i]], "Production Assistant" = split)
   }
   
   #8/8 TESTING MAKING MASTER DF
@@ -302,6 +305,7 @@ return(c(prod_df_list, filenames))
   
 }
 
-# Local Test
-# testlist <- people_placer("Ace Ventura", "Blazing Saddles", "Contact", "TEST_ LUX Role Survey AU19 (Responses) - Form Responses 1.csv")
-
+# Local Test Information:
+#luxtitles <- c("Pumpkin Spice", "Home", "Life on Earth", "Pseudonym")
+#file <- read.csv("LUX Role Survey AU19 (Responses) EDITED BY RACHEL - Form Responses 1.csv", stringsAsFactors = FALSE)
+#testlist <- people_placer(luxtitles, file, 4)
