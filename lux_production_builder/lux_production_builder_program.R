@@ -5,7 +5,10 @@ library(tibble)
 
 
 people_placer <- function(production_titles, googleform, num_productions) {
-  # ***** COMMONLY USED VARIABLES - entered by user in app *****
+  # alphabetize production titles, trim whitespace, and shift to lowercase to ensure all results are the same across machines
+  production_titles <- sort(production_titles)
+  production_titles <- trimws(production_titles)
+  production_titles <- tolower(production_titles) # added 1/6/20
   
   # replace spaces with underscores
   production_titles_u <- c()
@@ -19,11 +22,23 @@ people_placer <- function(production_titles, googleform, num_productions) {
   # delete timestamped column
   members <- googleform[,-1]
   # define column names
-  column_names <- c("email", "name", "years_in_lux", "years_at_uw", "writer/director?",
-                    "writer/director film", "pref_prod_1", "pref_prod_2", "pref_prod_3",
+  column_names <- c("email", "name", "years_in_lux", "years_at_uw", "writer_director",
+                    "writer_director_film", "pref_prod_1", "pref_prod_2", "pref_prod_3",
                     "pref_role_1", "pref_role_2", "pref_role_3", "importance", "notes")
   # rename column names so the program can reference them
   colnames(members) <- column_names
+  
+  # keeps most recent submission from each name, added 1/5/20
+  members <- members[!duplicated(members$name, fromLast = TRUE),]
+  
+  # sorts members df by whether or not they are a writer/director, so writer/directors are placed first, added 1/8/20
+  members <- members[order(members$writer_director, decreasing = TRUE),]
+  
+  # converts production titles to lowercase, added 1/6/20
+  members$pref_prod_1 <- tolower(members$pref_prod_1)
+  members$pref_prod_2 <- tolower(members$pref_prod_2)
+  members$pref_prod_3 <- tolower(members$pref_prod_3)
+  members$writer_director_film <- tolower(members$writer_director_film)
   
   
   
@@ -67,7 +82,6 @@ people_placer <- function(production_titles, googleform, num_productions) {
   
   # sort members df by experience, so more experienced people get placed first
   members <- members[order(-members$years_in_lux, -members$years_at_uw),]
-  View(members)
   
   # ** ALGORITHM **
   
@@ -87,7 +101,7 @@ people_placer <- function(production_titles, googleform, num_productions) {
     repeat {
       
       # ********* WRITERS/DIRECTORS *********
-      if (members[1, "writer/director?"] == "Yes") {
+      if (members[1, "writer_director"] == "Yes") {
         # paste together the correct column name to check in the "production" DF
         column_to_check <- paste0(members[1, 6], "_email")
         column_to_check <- gsub(" ", "_", column_to_check)
@@ -305,7 +319,11 @@ return(c(prod_df_list, filenames))
   
 }
 
-# Local Test Information:
+# Local test information follows for the remainder of this file:
 #luxtitles <- c("Pumpkin Spice", "Home", "Life on Earth", "Pseudonym")
-#file <- read.csv("LUX Role Survey AU19 (Responses) EDITED BY RACHEL - Form Responses 1.csv", stringsAsFactors = FALSE)
+#file <- read.csv("LUX Role Survey AU19.csv", stringsAsFactors = FALSE)
 #testlist <- people_placer(luxtitles, file, 4)
+
+#View(testlist[[1]])
+#View(testlist[[2]])
+#View(testlist[[3]])

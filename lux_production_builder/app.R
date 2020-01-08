@@ -38,7 +38,7 @@ ui <- fluidPage(
                   "Winter" = "WI",
                   "Spring" = "SP",
                   "Summer" = "SU")),
-    numericInput("year", "Year:", 19, min = 00, max = 99),
+    numericInput("year", "Year:", 20, min = 00, max = 99),
     HTML("<br>"),
     
     # num_productions allows us to vary the number of productions depending on the quarter
@@ -46,7 +46,7 @@ ui <- fluidPage(
     numericInput("num_productions", label = NULL, value = 3, min = 1),
     HTML("<br>"),
     
-    HTML("Enter the production titles below (any order):"),
+    HTML("Enter the production titles below:"),
     # Place to hold dynamic inputs
     uiOutput("inputGroup"),
     
